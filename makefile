@@ -2,7 +2,6 @@
 
 all: main
 
-
 main: graph_io.o bronKerbosch.o main.cpp
 	g++ graph_io.o bronKerbosch.o main.cpp -std=c++11 -Werror=all -o main
 

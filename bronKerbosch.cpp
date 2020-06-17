@@ -9,7 +9,7 @@ BronKerbosch::BronKerbosch(std::vector<std::vector<int>> &_connected) {
 }
 
 void BronKerbosch::solve() {
-  std::vector<int> P(N);
+  std::vector<int> P;
   std::vector<int> R;
   std::vector<int> X;
   for (int i = 0; i < (int) N; i++) P.push_back(i);
@@ -18,10 +18,24 @@ void BronKerbosch::solve() {
 }
 
 void BronKerbosch::solve_recursion(std::vector<int> &P, std::vector<int> &R, std::vector<int> &X) {
+
+  // std::cout << "----" << std::endl << "P: ";
+  // for (int i = 0; i < P.size(); i++) std::cout << P[i] << ", ";
+  // std::cout << std::endl << "R: ";
+  // for (int i = 0; i < R.size(); i++) std::cout << R[i] << ", ";
+  // std::cout << std::endl << "X: ";
+  // for (int i = 0; i < X.size(); i++) std::cout << X[i] << ", ";
+  // std::cout << std::endl;
+
   if (P.size() == 0 && X.size() == 0) {
+    // std::cout << "found" << std::endl;
     cliqueCounter++;
     if (reportClique) {
-      // printClique
+      std::cout << "clique: ";
+      for (int i = 0; i < R.size(); i++) {
+        std::cout << R[i] << ", ";
+      }
+      std::cout << std::endl;
     }
     return;
   }
@@ -48,6 +62,7 @@ void BronKerbosch::solve_recursion(std::vector<int> &P, std::vector<int> &R, std
     P.pop_back();
     X.push_back(v);
   }
+  // std::cout << "end" << std::endl;
 }
 
 bool BronKerbosch::edge(int p, int q) {
