@@ -30,9 +30,10 @@ int main(int argn, char **argv) {
   std::vector<std::vector<int>> connected = buildAdjG(G);
 
   BronKerbosch algo(connected);
-  algo.solve();
-
+  algo.solveFixP();
   std::cout << algo.cliqueCounter << std::endl;
+
+  // algo.testFixP();
 
   return 0;
 }

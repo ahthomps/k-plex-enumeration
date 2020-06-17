@@ -8,5 +8,5 @@ main: graph_io.o bronKerbosch.o main.cpp
 bronKerbosch.o: bronKerbosch.cpp bronKerbosch.h
 	g++ bronKerbosch.cpp -c -std=c++11
 
-graph_io.o: graph_access/graph_io.cpp graph_access/graph_io.h graph_access/graph_access.h graph_access/definitions.h graph_access/macros_assertions.h graph_access/macros_common.h
+graph_io.o: graph_access/graph_io.cpp graph_access/graph_io.h graph_access/graph_access.h
 	g++ graph_access/graph_io.cpp -c -std=c++11
