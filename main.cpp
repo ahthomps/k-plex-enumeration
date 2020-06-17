@@ -2,6 +2,7 @@
 #include <vector>
 #include <string>
 
+#include "timer.h"
 #include "graph_access/graph_io.h"
 #include "bronKerbosch.h"
 
@@ -29,9 +30,11 @@ int main(int argn, char **argv) {
   graph_io::readGraphWeighted(G, filename);
   std::vector<std::vector<int>> connected = buildAdjG(G);
 
+  timer t;
+
   BronKerbosch algo(connected);
   algo.solveFixP();
-  std::cout << algo.cliqueCounter << std::endl;
+  std::cout << filename << << algo.cliqueCounter << t.elapsed() << std::endl;
 
   // algo.testFixP();
 
