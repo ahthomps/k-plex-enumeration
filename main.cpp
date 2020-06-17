@@ -34,7 +34,7 @@ int main(int argn, char **argv) {
 
   BronKerbosch algo(connected);
   algo.solveFixP();
-  std::cout << filename << << algo.cliqueCounter << t.elapsed() << std::endl;
+  std::cout << filename << algo.cliqueCounter << t.elapsed() << std::endl;
 
   // algo.testFixP();
 
