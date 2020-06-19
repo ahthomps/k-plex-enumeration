@@ -19,15 +19,20 @@ class BronKerbosch {
     void solveFixP();
     void solveFixP_recursion(std::vector<int> &P, std::vector<int> &R, std::vector<int> &X);
 
+    void solveFixP_recursion2(std::vector<int> &P, std::vector<int> &R, std::vector<int> &X);
+
     void testFixP();
 
   private:
 
     std::vector<std::vector<int>> connected;
+    std::vector<bool> connected_bool;
     size_t N;
 
     bool edge(int p, int q);
     void getFixP(std::vector<int> &P, std::vector<int> &X, int &fixp, int &nod, int &s);
+    void getFixP2(std::vector<int> &P, std::vector<int> &X, std::vector<bool> &P_bool, std::vector<int> &candidates);
+
 };
 
 #endif
