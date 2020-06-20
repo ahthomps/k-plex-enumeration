@@ -33,10 +33,8 @@ int main(int argn, char **argv) {
   timer t;
 
   BronKerbosch algo(connected);
-  algo.solveFixP();
+  algo.solve();
   std::cout << filename << " " << algo.cliqueCounter << " " << t.elapsed() << std::endl;
-
-  // algo.testFixP();
 
   return 0;
 }

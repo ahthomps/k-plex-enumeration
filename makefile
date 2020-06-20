@@ -2,11 +2,11 @@
 
 all: main
 
-main: graph_io.o bronKerbosch.o main.cpp
-	g++ graph_io.o bronKerbosch.o main.cpp -std=c++11 -Werror=all -o main
+main: optimized/graph_io.o optimized/bronKerbosch.o main.cpp
+	g++ optimized/graph_io.o optimized/bronKerbosch.o main.cpp -std=c++11 -Werror=all -o main
 
-bronKerbosch.o: bronKerbosch.cpp bronKerbosch.h
-	g++ bronKerbosch.cpp -c -std=c++11
+optimized/bronKerbosch.o: bronKerbosch/bronKerbosch.cpp bronKerbosch/bronKerbosch.h
+	g++ bronKerbosch/bronKerbosch.cpp -c -std=c++11 -o optimized/bronKerbosch.o
 
-graph_io.o: graph_access/graph_io.cpp graph_access/graph_io.h graph_access/graph_access.h
-	g++ graph_access/graph_io.cpp -c -std=c++11
+optimized/graph_io.o: graph_access/graph_io.cpp graph_access/graph_io.h graph_access/graph_access.h
+	g++ graph_access/graph_io.cpp -c -std=c++11 -o optimized/graph_io.o
