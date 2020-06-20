@@ -223,7 +223,7 @@ void BronKerbosch::solveFixP_recursion3(std::vector<int> &P, std::vector<int> &R
 
   std::vector<bool> candidates(N, false);
   size_t num_candidates;
-  getFixP3(P, X, P_bool, candidates, num_candidates);
+  getCandidates(P, X, P_bool, candidates, num_candidates);
 
   int p, sel;
   size_t P_index = 0;
