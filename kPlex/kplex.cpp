@@ -35,13 +35,18 @@ void KPlex::OneNearCliques() {
       for (int v : common_neighbors) {
         adj_list.clear();
         for (int u : adj[v]) if (save_indices[u] != -1) adj_list.push_back(save_indices[u]);
+        common_neighborhood.push_back(adj_list);
       }
 
-      BronKerbosch maximal_clique_algo(common_neighborhood);
-      maximal_clique_algo.reportClique = reportOneNearClique;
-      maximal_clique_algo.solve();
-
-      one_near_cliques_counter += maximal_clique_algo.cliqueCounter;
+      if (common_neighborhood.size() == 0) {
+        one_near_cliques_counter++;
+      }
+      else {
+        BronKerbosch maximal_clique_algo(common_neighborhood);
+        maximal_clique_algo.reportClique = reportOneNearClique;
+        maximal_clique_algo.solve();
+        one_near_cliques_counter += maximal_clique_algo.cliqueCounter;
+      }
 
       for (int v : common_neighbors) save_indices[v] = -1;
     }
