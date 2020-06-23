@@ -1,6 +1,8 @@
 #include <iostream>
 #include <vector>
 
+#include "../tools/fast_set.h"
+
 #ifndef BRONKERBOSCH_H_
 #define BRONKERBOSCH_H_
 
@@ -18,8 +20,7 @@ class BronKerbosch {
   private:
 
     std::vector<std::vector<int>> connected;
-    std::vector<bool> connected_bool;
-    std::vector<bool> used;
+    FastSet used;
     size_t N;
 
     void solve_recursion(std::vector<int> &P, std::vector<int> &R, std::vector<int> &X);

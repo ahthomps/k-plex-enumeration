@@ -2,8 +2,11 @@
 
 all: main
 
-main: optimized/graph_io.o optimized/bronKerbosch.o main.cpp
-	g++ optimized/graph_io.o optimized/bronKerbosch.o main.cpp -std=c++11 -Werror=all -o main
+main: optimized/graph_io.o optimized/bronKerbosch.o optimized/kplex.o optimized/kplex.o main.cpp
+	g++ optimized/graph_io.o optimized/bronKerbosch.o optimized/kplex.o main.cpp -std=c++11 -Werror=all -o main
+
+optimized/kplex.o: optimized/bronKerbosch.o kPlex/kplex.h kPlex/kplex.cpp
+	g++ kPlex/kplex.cpp -c -std=c++11 -o optimized/kplex.o
 
 optimized/bronKerbosch.o: bronKerbosch/bronKerbosch.cpp bronKerbosch/bronKerbosch.h
 	g++ bronKerbosch/bronKerbosch.cpp -c -std=c++11 -o optimized/bronKerbosch.o

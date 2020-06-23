@@ -4,7 +4,9 @@
 
 #include "timer.h"
 #include "graph_access/graph_io.h"
-#include "bronKerbosch.h"
+#include "bronKerbosch/bronKerbosch.h"
+#include "kPlex/kplex.h"
+
 
 std::vector<std::vector<int>> buildAdjG(graph_access &G) {
     std::vector<std::vector<int>> adj;
@@ -28,13 +30,21 @@ int main(int argn, char **argv) {
   graph_access G;
   std::string filename = argv[1];
   graph_io::readGraphWeighted(G, filename);
-  std::vector<std::vector<int>> connected = buildAdjG(G);
+  std::vector<std::vector<int>> adj = buildAdjG(G);
 
   timer t;
 
-  BronKerbosch algo(connected);
-  algo.solve();
-  std::cout << filename << " " << algo.cliqueCounter << " " << t.elapsed() << std::endl;
+  // BronKerbosch algo(adj);
+  // algo.solve();
+  // std::cout << filename << " " << algo.cliqueCounter << " " << t.elapsed() << std::endl;
+
+  // adj = buildAdjG(G);
+
+  std::cout << filename << " " << adj.size() << std::endl;
+
+  KPlex kplex(adj);
+  kplex.OneNearCliques();
+  std::cout << filename << " " << kplex.one_near_cliques_counter << " " << t.elapsed() << std::endl;
 
   return 0;
 }
