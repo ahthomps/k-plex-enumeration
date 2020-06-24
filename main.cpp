@@ -40,8 +40,8 @@ int main(int argn, char **argv) {
 
   // adj = buildAdjG(G);
 
-  std::cout << filename << " " << adj.size() << std::endl;
-
+  // std::cout << filename << " " << adj.size() << std::endl;
+  //
   KPlex kplex(adj);
   kplex.OneNearCliques();
   std::cout << filename << " " << kplex.one_near_cliques_counter << " " << t.elapsed() << std::endl;

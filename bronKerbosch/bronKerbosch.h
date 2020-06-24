@@ -16,6 +16,7 @@ class BronKerbosch {
     BronKerbosch(std::vector<std::vector<int>> &_connected);
 
     void solve();
+    void solveOn(std::vector<int> &P);
 
   private:
 
@@ -24,7 +25,10 @@ class BronKerbosch {
     size_t N;
 
     void solve_recursion(std::vector<int> &P, std::vector<int> &R, std::vector<int> &X);
-    void getCandidates(std::vector<int> const &P, std::vector<int> const &X, std::vector<bool> const &P_bool, std::vector<bool> &candidates, size_t &num_candidates);
+    // void getCandidates(std::vector<int> const &P, std::vector<int> const &X, std::vector<bool> const &P_bool, std::vector<bool> &candidates, size_t &num_candidates);
+    void getCandidates(std::vector<int> const &P, std::vector<int> const &X, std::vector<int> &disconnections);
+    // void getCandidates(std::vector<int> const &P, std::vector<int> const &X, std::vector<bool> &candidates, size_t &num_candidates);
+
 
 };
 

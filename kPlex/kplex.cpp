@@ -11,9 +11,19 @@ KPlex::KPlex(std::vector<std::vector<int>> &_adj) {
   adj_bool.resize(N, false);
   used.set_fast_set(N);
   save_indices.resize(N, -1);
+
+  std::vector<std::vector<int>> adj_copy = adj;
+  maximal_clique_algo = new BronKerbosch(adj_copy);
+  maximal_clique_algo->reportClique = reportOneNearClique;
+
+  if (adj.size() == 0) {std::cout << "wrong" << std::endl; exit(0);}
 }
 
-void KPlex::OneNearCliques() {
+KPlex::~KPlex() {
+  delete maximal_clique_algo;
+}
+
+void KPlex::OneNearCliquesFindNeighborhood() {
 
   for (int node1 = 0; node1 < adj.size() - 1; node1++) {
     used.clear();
@@ -49,6 +59,28 @@ void KPlex::OneNearCliques() {
       }
 
       for (int v : common_neighbors) save_indices[v] = -1;
+    }
+  }
+}
+
+void KPlex::OneNearCliques() {
+
+  for (int node1 = 0; node1 < adj.size() - 1; node1++) {
+    used.clear();
+    for (int v : adj[node1]) used.add(v);
+    for (int node2 = node1 + 1; node2 < adj.size(); node2++) {
+
+      if (used.get(node2)) continue;
+
+      // find common neighbors
+      std::vector<int> common_neighbors;
+      for (int v : adj[node2]) if (used.get(v)) common_neighbors.push_back(v);
+
+      if (common_neighbors.size() == 0) one_near_cliques_counter++;
+      else {
+        maximal_clique_algo->solveOn(common_neighbors);
+        one_near_cliques_counter += maximal_clique_algo->cliqueCounter;
+      }
     }
   }
 }

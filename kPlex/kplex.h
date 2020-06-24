@@ -14,8 +14,10 @@ class KPlex {
     size_t one_near_cliques_counter = 0;
 
     KPlex(std::vector<std::vector<int>> &_adj);
+    ~KPlex();
 
     void OneNearCliques();
+    void OneNearCliquesFindNeighborhood();
 
   private:
     std::vector<std::vector<int>> adj;
@@ -23,6 +25,8 @@ class KPlex {
     FastSet used;
     std::vector<int> save_indices;
     size_t N;
+
+    BronKerbosch* maximal_clique_algo;
 
 };
 
