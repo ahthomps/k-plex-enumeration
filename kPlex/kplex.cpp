@@ -15,8 +15,6 @@ KPlex::KPlex(std::vector<std::vector<int>> &_adj) {
   std::vector<std::vector<int>> adj_copy = adj;
   maximal_clique_algo = new BronKerbosch(adj_copy);
   maximal_clique_algo->reportClique = reportOneNearClique;
-
-  if (adj.size() == 0) {std::cout << "wrong" << std::endl; exit(0);}
 }
 
 KPlex::~KPlex() {
