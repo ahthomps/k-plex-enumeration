@@ -4,17 +4,17 @@
 #include "bronKerbosch.h"
 #include "../tools/fast_set.h"
 
-BronKerbosch::BronKerbosch(std::vector<std::vector<int>> &_connected) {
-  connected.swap(_connected);
-  N = connected.size();
-  used.set_fast_set(N);
+BronKerbosch::BronKerbosch(std::vector<std::vector<int>> &adj) {
+  _adj.swap(adj);
+  _N = _adj.size();
+  used.set_fast_set(_N);
 }
 
 void BronKerbosch::solve() {
   std::vector<int> P;
   std::vector<int> R;
   std::vector<int> X;
-  for (int i = 0; i < (int) N; i++) P.push_back(i);
+  for (int i = 0; i < (int) _N; i++) P.push_back(i);
 
   cliqueCounter = 0;
 
@@ -48,7 +48,7 @@ void BronKerbosch::solve_recursion(std::vector<int> &P, std::vector<int> &R, std
   for (int sel : disconnections) {
 
     used.clear();
-    for (int neighbor : connected[sel]) used.add(neighbor);
+    for (int neighbor : _adj[sel]) used.add(neighbor);
 
     std::vector<int> new_X;
     std::vector<int> new_P;
@@ -87,7 +87,7 @@ void BronKerbosch::getDisconnections(std::vector<int> const &P, std::vector<int>
   for (std::vector<int> const *S : List_PandX) {
     for (int node : *S) {
       counter = 0;
-      for (int neighbor : connected[node]) if (used.get(neighbor)) counter++;
+      for (int neighbor : _adj[node]) if (used.get(neighbor)) counter++;
       if (counter > max_connections) {
         max_connections = counter;
         fixp = node;
@@ -96,7 +96,7 @@ void BronKerbosch::getDisconnections(std::vector<int> const &P, std::vector<int>
   }
 
   used.clear();
-  for (int v : connected[fixp]) used.add(v);
+  for (int v : _adj[fixp]) used.add(v);
 
   for (int v : P) if (!used.get(v)) disconnections.push_back(v);
 }

@@ -13,16 +13,16 @@ class BronKerbosch {
     bool reportClique = false;
     int cliqueCounter = 0;
 
-    BronKerbosch(std::vector<std::vector<int>> &_connected);
+    BronKerbosch(std::vector<std::vector<int>> &adj);
 
     void solve();
     void solveOn(std::vector<int> &P);
 
   private:
 
-    std::vector<std::vector<int>> connected;
+    std::vector<std::vector<int>> _adj;
     FastSet used;
-    size_t N;
+    size_t _N;
 
     void solve_recursion(std::vector<int> &P, std::vector<int> &R, std::vector<int> &X);
     void getDisconnections(std::vector<int> const &P, std::vector<int> const &X, std::vector<int> &disconnections);
