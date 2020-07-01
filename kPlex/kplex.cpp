@@ -43,4 +43,25 @@ void KPlex::one_near_cliques() {
 
 void KPlex::two_plexes() {
 
+  one_near_cliques();
+
+  std::function<bool(std::vector<std::vector<int>> const *, std::vector<int>)> check1 = [&] (std::vector<std::vector<int>> const *p_adj, std::vector<int> R) -> bool {
+    std::vector<std::vector<int>> const &adj = *p_adj;
+
+    _used.clear();
+    for (int const r : R) _used.add(r);
+
+    size_t neighbors_in_clique = 0;
+    for (int node = 0; node < adj.size(); node++) {
+      if (_used.get(node)) continue;
+      neighbors_in_clique = 0;
+      for (int const v : adj[node]) if (_used.get(v)) neighbors_in_clique++;
+      if (neighbors_in_clique + 1 == R.size()) return false;
+    }
+
+    return true;
+  };
+
+  _maximal_clique_algo->solve(check1);
+  _one_near_cliques_counter += _maximal_clique_algo->_clique_counter;
 }

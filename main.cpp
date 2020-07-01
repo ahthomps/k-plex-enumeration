@@ -34,12 +34,12 @@ int main(int argn, char **argv) {
 
   timer t;
 
-  auto square = [&](int i)
-    {
-        return i * i;
-    };
-
-  std::cout << "Square of 5 is : " << square(5) << std::endl;
+  // auto square = [&](int i)
+  //   {
+  //       return i * i;
+  //   };
+  //
+  // std::cout << "Square of 5 is : " << square(5) << std::endl;
 
   // BronKerbosch algo(&adj);
   // algo.solve();
@@ -48,7 +48,8 @@ int main(int argn, char **argv) {
   // std::cout << filename << " " << adj.size() << std::endl;
   //
   KPlex kplex(&adj);
-  kplex.one_near_cliques();
+  // kplex.one_near_cliques();
+  kplex.two_plexes();
   std::cout << filename << " " << kplex._one_near_cliques_counter << " " << t.elapsed() << std::endl;
 
   return 0;

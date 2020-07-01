@@ -11,14 +11,14 @@ BronKerbosch::BronKerbosch(std::vector<std::vector<int>> const *adj) :
   _used.set_fast_set(_N);
 }
 
-void BronKerbosch::solve(std::function<bool(std::vector<int>)> check) {
+void BronKerbosch::solve(std::function<bool(std::vector<std::vector<int>>const *, std::vector<int>)> check) {
   std::vector<int> P;
   for (int i = 0; i < (int) _N; i++) P.push_back(i);
 
   solve_on(P, check);
 }
 
-void BronKerbosch::solve_on(std::vector<int> &P, std::function<bool(std::vector<int>)> check) {
+void BronKerbosch::solve_on(std::vector<int> &P, std::function<bool(std::vector<std::vector<int>> const *, std::vector<int>)> check) {
   std::vector<int> R;
   std::vector<int> X;
 
@@ -27,8 +27,8 @@ void BronKerbosch::solve_on(std::vector<int> &P, std::function<bool(std::vector<
   solve_recursion(P, R, X, check);
 }
 
-void BronKerbosch::solve_recursion(std::vector<int> &P, std::vector<int> &R, std::vector<int> &X, std::function<bool(std::vector<int>)> check) {
-  if (P.empty() && X.empty()) {
+void BronKerbosch::solve_recursion(std::vector<int> &P, std::vector<int> &R, std::vector<int> &X, std::function<bool(std::vector<std::vector<int>> const *, std::vector<int>)> check) {
+  if (P.empty() && X.empty() && check(&_adj, R)) {
     _clique_counter++;
     if (_report_clique) {
       for (int const r : R) std::cout << r << ", ";

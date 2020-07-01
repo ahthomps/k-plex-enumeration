@@ -12,6 +12,7 @@ class KPlex {
   public:
     bool _report_one_near_clique = false;
     size_t _one_near_cliques_counter = 0;
+    int type = 1;
 
     KPlex(std::vector<std::vector<int>> const *adj);
     ~KPlex();
