@@ -10,22 +10,22 @@ class BronKerbosch {
 
   public:
 
-    bool reportClique = false;
-    int cliqueCounter = 0;
+    bool _report_clique = false;
+    int _clique_counter = 0;
 
-    BronKerbosch(std::vector<std::vector<int>> &adj);
+    BronKerbosch(std::vector<std::vector<int>> const *adj);
 
-    void solve();
-    void solveOn(std::vector<int> &P);
+    void solve(std::function<bool(std::vector<int>)> check=([] (std::vector<int> R) -> bool {return true;}));
+    void solve_on(std::vector<int> &P, std::function<bool(std::vector<int>)> check=([] (std::vector<int> R) -> bool {return true;}));
 
   private:
 
-    std::vector<std::vector<int>> _adj;
-    FastSet used;
+    const std::vector<std::vector<int>>& _adj;
+    FastSet _used;
     size_t _N;
 
-    void solve_recursion(std::vector<int> &P, std::vector<int> &R, std::vector<int> &X);
-    void getDisconnections(std::vector<int> const &P, std::vector<int> const &X, std::vector<int> &disconnections);
+    void solve_recursion(std::vector<int> &P, std::vector<int> &R, std::vector<int> &X, std::function<bool(std::vector<int>)> check);
+    void get_pivot_non_neighbors(std::vector<int> const &P, std::vector<int> const &X, std::vector<int> &pivot_non_neighbors);
 
 
 };

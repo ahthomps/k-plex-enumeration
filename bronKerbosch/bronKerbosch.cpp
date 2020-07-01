@@ -4,90 +4,78 @@
 #include "bronKerbosch.h"
 #include "../tools/fast_set.h"
 
-BronKerbosch::BronKerbosch(std::vector<std::vector<int>> &adj) {
-  _adj.swap(adj);
+BronKerbosch::BronKerbosch(std::vector<std::vector<int>> const *adj) :
+  _adj(*adj)
+{
   _N = _adj.size();
-  used.set_fast_set(_N);
+  _used.set_fast_set(_N);
 }
 
-void BronKerbosch::solve() {
+void BronKerbosch::solve(std::function<bool(std::vector<int>)> check) {
   std::vector<int> P;
-  std::vector<int> R;
-  std::vector<int> X;
   for (int i = 0; i < (int) _N; i++) P.push_back(i);
 
-  cliqueCounter = 0;
-
-  solve_recursion(P, R, X);
+  solve_on(P, check);
 }
 
-void BronKerbosch::solveOn(std::vector<int> &P) {
+void BronKerbosch::solve_on(std::vector<int> &P, std::function<bool(std::vector<int>)> check) {
   std::vector<int> R;
   std::vector<int> X;
 
-  cliqueCounter = 0;
+  _clique_counter = 0;
 
-  solve_recursion(P, R, X);
+  solve_recursion(P, R, X, check);
 }
 
-void BronKerbosch::solve_recursion(std::vector<int> &P, std::vector<int> &R, std::vector<int> &X) {
-  if (P.size() == 0 && X.size() == 0) {
-    cliqueCounter++;
-    if (reportClique) {
-      for (int r : R) std::cout << r << ", ";
+void BronKerbosch::solve_recursion(std::vector<int> &P, std::vector<int> &R, std::vector<int> &X, std::function<bool(std::vector<int>)> check) {
+  if (P.empty() && X.empty()) {
+    _clique_counter++;
+    if (_report_clique) {
+      for (int const r : R) std::cout << r << ", ";
       std::cout << std::endl;
     }
     return;
   }
-  if (P.size() == 0) return;
+  if (P.empty()) return;
 
-  std::vector<int> disconnections;
-  getDisconnections(P, X, disconnections);
+  std::vector<int> pivot_non_neighbors;
+  get_pivot_non_neighbors(P, X, pivot_non_neighbors);
 
-  size_t P_index;
-  for (int sel : disconnections) {
+  size_t pivot_nn_index = 0;
+  for (int const pivot_nn : pivot_non_neighbors) {
+    _used.clear();
+    for (int const neighbor : _adj[pivot_nn]) _used.add(neighbor);
 
-    used.clear();
-    for (int neighbor : _adj[sel]) used.add(neighbor);
-
-    std::vector<int> new_X;
-    std::vector<int> new_P;
-    for (size_t i = 0; i < P.size() || i < X.size(); i++) {
-      // find the index of the current candidate and build new_P
-      if (i < P.size()) {
-        if (P[i] == sel) P_index = i;
-        if (used.get(P[i])) new_P.push_back(P[i]);
-      }
-      // build new_X
-      if (i < X.size()) if (used.get(X[i])) new_X.push_back(X[i]);
+    std::vector<int> new_X, new_P;
+    for (size_t i = 0; i < P.size(); i++) {
+      if (P[i] == pivot_nn) pivot_nn_index = i;
+      if (_used.get(P[i])) new_P.push_back(P[i]);
     }
+    for (size_t i = 0; i < X.size(); i++) if (_used.get(X[i])) new_X.push_back(X[i]);
 
-    R.push_back(sel);
+    R.push_back(pivot_nn);
 
-    solve_recursion(new_P, R, new_X);
+    solve_recursion(new_P, R, new_X, check);
 
-    P[P_index] = P[P.size() - 1];
-    P[P.size() - 1] = sel;
+    P[pivot_nn_index] = P[P.size() - 1];
+    P.pop_back();
 
     R.pop_back();
-    X.push_back(sel);
-    P.pop_back();
+    X.push_back(pivot_nn);
   }
 }
 
-void BronKerbosch::getDisconnections(std::vector<int> const &P, std::vector<int> const &X, std::vector<int> &disconnections) {
+void BronKerbosch::get_pivot_non_neighbors(std::vector<int> const &P, std::vector<int> const &X, std::vector<int> &pivot_non_neighbors) {
 
-  std::vector<std::vector<int> const *> List_PandX{&P, &X};
-  int counter, max_connections, fixp;
-  max_connections = -1;
+  int counter = 0, max_connections = -1, fixp = 0;
 
-  used.clear();
-  for (int p : P) used.add(p);
+  _used.clear();
+  for (int p : P) _used.add(p);
 
-  for (std::vector<int> const *S : List_PandX) {
-    for (int node : *S) {
+  for (std::vector<int> const *S : {&P, &X}) {
+    for (int const node : *S) {
       counter = 0;
-      for (int neighbor : _adj[node]) if (used.get(neighbor)) counter++;
+      for (int const neighbor : _adj[node]) if (_used.get(neighbor)) counter++;
       if (counter > max_connections) {
         max_connections = counter;
         fixp = node;
@@ -95,8 +83,8 @@ void BronKerbosch::getDisconnections(std::vector<int> const &P, std::vector<int>
     }
   }
 
-  used.clear();
-  for (int v : _adj[fixp]) used.add(v);
+  _used.clear();
+  for (int const v : _adj[fixp]) _used.add(v);
 
-  for (int v : P) if (!used.get(v)) disconnections.push_back(v);
+  for (int const p : P) if (!_used.get(p)) pivot_non_neighbors.push_back(p);
 }

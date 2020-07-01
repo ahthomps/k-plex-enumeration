@@ -10,20 +10,21 @@
 class KPlex {
 
   public:
-    bool reportOneNearClique = false;
-    size_t one_near_cliques_counter = 0;
+    bool _report_one_near_clique = false;
+    size_t _one_near_cliques_counter = 0;
 
-    KPlex(std::vector<std::vector<int>> &adj);
+    KPlex(std::vector<std::vector<int>> const *adj);
     ~KPlex();
 
-    void OneNearCliques();
+    void two_plexes();
+    void one_near_cliques();
 
   private:
-    std::vector<std::vector<int>> _adj;
-    FastSet used;
+    const std::vector<std::vector<int>>& _adj;
+    FastSet _used;
     size_t _N;
 
-    BronKerbosch* maximal_clique_algo;
+    BronKerbosch* _maximal_clique_algo;
 
 };
 
