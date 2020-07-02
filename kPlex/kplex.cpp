@@ -1,5 +1,6 @@
 #include <iostream>
 #include <vector>
+#include <functional>
 
 #include "kplex.h"
 #include "../tools/fast_set.h"
@@ -45,20 +46,20 @@ void KPlex::two_plexes() {
 
   one_near_cliques();
 
-  std::function<bool(std::vector<std::vector<int>> const *, std::vector<int>)> check1 = [&] (std::vector<std::vector<int>> const *p_adj, std::vector<int> R) -> bool {
+  std::function<bool(std::vector<std::vector<int>> const *, std::vector<int>)> check1 = [&] (std::vector<std::vector<int>> const * p_adj, std::vector<int> R) -> bool {
     std::vector<std::vector<int>> const &adj = *p_adj;
+
+    if (R.size() < 2) return true;
 
     _used.clear();
     for (int const r : R) _used.add(r);
 
-    size_t neighbors_in_clique = 0;
-    for (int node = 0; node < adj.size(); node++) {
+    for (size_t node = 0; node < adj.size(); node ++) {
       if (_used.get(node)) continue;
-      neighbors_in_clique = 0;
-      for (int const v : adj[node]) if (_used.get(v)) neighbors_in_clique++;
-      if (neighbors_in_clique + 1 == R.size()) return false;
+      size_t neighbors_in_clique = 0;
+      for (int const neighbor : adj[node]) if (_used.get(neighbor)) neighbors_in_clique++;
+      if (R.size() - 1 == neighbors_in_clique) return false;
     }
-
     return true;
   };
 

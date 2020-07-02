@@ -1,5 +1,6 @@
 #include <iostream>
 #include <vector>
+#include <functional>
 
 #include "../bronKerbosch/bronKerbosch.h"
 #include "../tools/fast_set.h"
