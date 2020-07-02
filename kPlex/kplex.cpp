@@ -46,7 +46,7 @@ void KPlex::two_plexes() {
 
   one_near_cliques();
 
-  std::function<bool(std::vector<std::vector<int>> const *, std::vector<int>)> check1 = [&] (std::vector<std::vector<int>> const * p_adj, std::vector<int> R) -> bool {
+  std::function<bool(std::vector<std::vector<int>> const *, std::vector<int>)> bruteforce_check = [&] (std::vector<std::vector<int>> const * p_adj, std::vector<int> R) -> bool {
     std::vector<std::vector<int>> const &adj = *p_adj;
 
     if (R.size() < 2) return true;
@@ -63,6 +63,25 @@ void KPlex::two_plexes() {
     return true;
   };
 
-  _maximal_clique_algo->solve(check1);
+  std::function<bool(std::vector<std::vector<int>> const *, std::vector<int>)> optimized_check = [&] (std::vector<std::vector<int>> const * p_adj, std::vector<int> R) -> bool {
+    std::vector<std::vector<int>> const &adj = *p_adj;
+
+    if (R.size() < 2) return true;
+
+    _used.clear();
+    for (int const r : R) _used.add(r);
+
+    for (int const clique_node : {R[0], R[1]}) {
+      for (int const clique_node_neighbor : adj[clique_node]) {
+        if (_used.get(clique_node_neighbor)) continue;
+        size_t neighbors_in_clique = 0;
+        for (int const neighbor : adj[clique_node_neighbor]) if (_used.get(neighbor)) neighbors_in_clique++;
+        if (R.size() - 1 == neighbors_in_clique) return false;
+      }
+    }
+    return true;
+  };
+
+  _maximal_clique_algo->solve(optimized_check);
   _one_near_cliques_counter += _maximal_clique_algo->_clique_counter;
 }
