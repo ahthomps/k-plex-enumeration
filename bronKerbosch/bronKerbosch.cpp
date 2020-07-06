@@ -12,9 +12,13 @@ BronKerbosch::BronKerbosch(std::vector<std::vector<int>> const *adj) :
   _used.set_fast_set(_N);
 }
 
+size_t BronKerbosch::get_clique_counter() {
+  return _clique_counter;
+}
+
 void BronKerbosch::solve(std::function<bool(std::vector<std::vector<int>>const *, std::vector<int>)> check) {
   std::vector<int> P;
-  for (int i = 0; i < (int) _N; i++) P.push_back(i);
+  for (int i = 0; i < static_cast<int>(_N); i++) P.push_back(i);
 
   solve_on(P, check);
 }

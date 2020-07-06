@@ -19,32 +19,72 @@ KPlex::~KPlex() {
   delete _maximal_clique_algo;
 }
 
-void KPlex::one_near_cliques() {
+size_t KPlex::get_kplex_counter() {
+  return _kplex_counter;
+}
 
-  for (int node1 = 0; node1 < _adj.size() - 1; node1++) {
+void KPlex::get_one_near_cliques() {
+
+  for (size_t node1 = 0; node1 < _adj.size() - 1; node1++) {
     _used.clear();
     for (int const v : _adj[node1]) _used.add(v);
 
-    for (int node2 = node1 + 1; node2 < _adj.size(); node2++) {
+    for (size_t node2 = node1 + 1; node2 < _adj.size(); node2++) {
 
       if (_used.get(node2)) continue;
 
       std::vector<int> common_neighbors;
       for (int const v : _adj[node2]) if (_used.get(v)) common_neighbors.push_back(v);
 
-      if (common_neighbors.empty()) _one_near_cliques_counter++;
+      if (common_neighbors.empty()) _kplex_counter++;
       else {
 
         _maximal_clique_algo->solve_on(common_neighbors);
-        _one_near_cliques_counter += _maximal_clique_algo->_clique_counter;
+        _kplex_counter += _maximal_clique_algo->_clique_counter;
       }
     }
   }
 }
 
-void KPlex::two_plexes() {
+void KPlex::get_one_near_cliques_connected() {
 
-  one_near_cliques();
+  for (size_t node = 0; node < _adj.size(); node++) {
+
+      // mark all of the vertices in N[node]
+      _used.clear();
+      _used.add(node);
+      for (int const v : _adj[node]) _used.add(v);
+
+      // get the 2 neighborhood of node
+      std::vector<int> two_neighborhood_node;
+      for (int const node_neighbor : _adj[node]) {
+        for (int const node_2_neighbor : _adj[node_neighbor]) {
+          if (_used.get(node_2_neighbor) || node_2_neighbor < node) continue;
+          two_neighborhood_node.push_back(node_2_neighbor);
+          _used.add(node_2_neighbor);
+        }
+      }
+
+      _used.clear();
+      for (int const v : _adj[node]) _used.add(v);
+
+      for (int const two_neighbor : two_neighborhood_node) {
+        std::vector<int> common_neighbors;
+        for (int const v : _adj[two_neighbor]) if (_used.get(v)) common_neighbors.push_back(v);
+
+        if (common_neighbors.empty()) _kplex_counter++;
+        else {
+          _maximal_clique_algo->solve_on(common_neighbors);
+          _kplex_counter += _maximal_clique_algo->_clique_counter;
+        }
+      }
+  }
+}
+
+void KPlex::get_two_plexes() {
+
+  if (_enumerate_connected_two_plex) get_one_near_cliques_connected();
+  else get_one_near_cliques();
 
   std::function<bool(std::vector<std::vector<int>> const *, std::vector<int>)> bruteforce_check = [&] (std::vector<std::vector<int>> const * p_adj, std::vector<int> R) -> bool {
     std::vector<std::vector<int>> const &adj = *p_adj;
@@ -83,5 +123,5 @@ void KPlex::two_plexes() {
   };
 
   _maximal_clique_algo->solve(optimized_check);
-  _one_near_cliques_counter += _maximal_clique_algo->_clique_counter;
+  _kplex_counter += _maximal_clique_algo->get_clique_counter();
 }

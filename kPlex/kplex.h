@@ -12,14 +12,17 @@ class KPlex {
 
   public:
     bool _report_one_near_clique = false;
-    size_t _one_near_cliques_counter = 0;
-    int type = 1;
+    bool _enumerate_connected_two_plex = true;
+    size_t _kplex_counter = 0;
 
     KPlex(std::vector<std::vector<int>> const *adj);
     ~KPlex();
 
-    void two_plexes();
-    void one_near_cliques();
+    size_t get_kplex_counter();
+
+    void get_two_plexes();
+    void get_one_near_cliques();
+    void get_one_near_cliques_connected();
 
   private:
     const std::vector<std::vector<int>>& _adj;

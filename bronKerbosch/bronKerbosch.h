@@ -12,10 +12,11 @@ class BronKerbosch {
   public:
 
     bool _report_clique = false;
-    int _clique_counter = 0;
-    int type = 2;
+    size_t _clique_counter = 0;
 
     BronKerbosch(std::vector<std::vector<int>> const *adj);
+
+    size_t get_clique_counter();
 
     void solve(std::function<bool(std::vector<std::vector<int>> const *, std::vector<int>)> check=([](std::vector<std::vector<int>> const * adj, std::vector<int> R) -> bool {return true;}));
     void solve_on(std::vector<int> &P, std::function<bool(std::vector<std::vector<int>> const *, std::vector<int>)> check=([](std::vector<std::vector<int>> const * adj, std::vector<int> R) -> bool {return true;}));

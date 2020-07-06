@@ -2,7 +2,7 @@
 #include <vector>
 #include <string>
 
-#include "timer.h"
+#include "tools/timer.h"
 #include "graph_access/graph_io.h"
 #include "bronKerbosch/bronKerbosch.h"
 #include "kPlex/kplex.h"
@@ -13,7 +13,7 @@ std::vector<std::vector<int>> buildAdjG(graph_access &G) {
     forall_nodes(G, v) {
         std::vector<int> neighbors;
         forall_out_edges(G, e, v) {
-            neighbors.push_back((int) G.getEdgeTarget(e));
+            neighbors.push_back(static_cast<int>(G.getEdgeTarget(e)));
         } endfor
         adj.push_back(neighbors);
     } endfor
@@ -43,14 +43,13 @@ int main(int argn, char **argv) {
 
   // BronKerbosch algo(&adj);
   // algo.solve();
-  // std::cout << filename << " " << algo.cliqueCounter << " " << t.elapsed() << std::endl;
+  // std::cout << filename << " " << algo.get_clique_counter() << " " << t.elapsed() << std::endl;
 
   // std::cout << filename << " " << adj.size() << std::endl;
   //
   KPlex kplex(&adj);
-  // kplex.one_near_cliques();
-  kplex.two_plexes();
-  std::cout << filename << " " << kplex._one_near_cliques_counter << " " << t.elapsed() << std::endl;
+  kplex.get_two_plexes();
+  std::cout << filename << " " << kplex.get_kplex_counter() << " " << t.elapsed() << std::endl;
 
   return 0;
 }
