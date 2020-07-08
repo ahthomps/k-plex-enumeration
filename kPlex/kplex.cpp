@@ -4,15 +4,17 @@
 
 #include "kplex.h"
 #include "../tools/fast_set.h"
+#include "../tools/config.h"
 #include "../bronKerbosch/bronKerbosch.h"
 
-KPlex::KPlex(std::vector<std::vector<int>> const *adj) :
+KPlex::KPlex(std::vector<std::vector<int>> const *adj, Config &config) :
   _adj(*adj)
 {
   _N = _adj.size();
   _used.set_fast_set(_N);
+  _enumerate_connected_two_plex = config.CONN_ONE_NR_CLQ;
 
-  _maximal_clique_algo = new BronKerbosch(&_adj);
+  _maximal_clique_algo = new BronKerbosch(&_adj, config);
 }
 
 KPlex::~KPlex() {
@@ -84,9 +86,12 @@ void KPlex::get_one_near_cliques_connected() {
 void KPlex::get_two_plexes() {
 
   if (_enumerate_connected_two_plex) get_one_near_cliques_connected();
-  else get_one_near_cliques();
+  else {
+    get_one_near_cliques();
+  }
 
-  std::function<bool(std::vector<std::vector<int>> const *, std::vector<int>)> bruteforce_check = [&] (std::vector<std::vector<int>> const * p_adj, std::vector<int> R) -> bool {
+
+  std::function<bool(std::vector<std::vector<int>> const *, std::vector<int>, std::vector<int>)> bruteforce_check = [&] (std::vector<std::vector<int>> const * p_adj, std::vector<int> R, std::vector<int> level_set_one) -> bool {
     std::vector<std::vector<int>> const &adj = *p_adj;
 
     if (R.size() < 2) return true;
@@ -103,7 +108,7 @@ void KPlex::get_two_plexes() {
     return true;
   };
 
-  std::function<bool(std::vector<std::vector<int>> const *, std::vector<int>)> optimized_check = [&] (std::vector<std::vector<int>> const * p_adj, std::vector<int> R) -> bool {
+  std::function<bool(std::vector<std::vector<int>> const *, std::vector<int>, std::vector<int>)> optimized_check = [&] (std::vector<std::vector<int>> const * p_adj, std::vector<int> R, std::vector<int> level_set_one) -> bool {
     std::vector<std::vector<int>> const &adj = *p_adj;
 
     if (R.size() < 2) return true;
@@ -122,6 +127,10 @@ void KPlex::get_two_plexes() {
     return true;
   };
 
-  _maximal_clique_algo->solve(optimized_check);
+  std::function<bool(std::vector<std::vector<int>> const *, std::vector<int>, std::vector<int>)> level_set_one_check = [&] (std::vector<std::vector<int>> const * p_adj, std::vector<int> R, std::vector<int> level_set_one) -> bool {
+    return R.size() < 2 || level_set_one.empty();
+  };
+
+  _maximal_clique_algo->solve(level_set_one_check);
   _kplex_counter += _maximal_clique_algo->get_clique_counter();
 }

@@ -3,6 +3,7 @@
 #include <string>
 
 #include "tools/timer.h"
+#include "tools/config.h"
 #include "graph_access/graph_io.h"
 #include "bronKerbosch/bronKerbosch.h"
 #include "kPlex/kplex.h"
@@ -27,6 +28,8 @@ int main(int argn, char **argv) {
     exit(1);
   }
 
+  Config config(argn, argv);
+
   graph_access G;
   std::string filename = argv[1];
   graph_io::readGraphWeighted(G, filename);
@@ -34,22 +37,26 @@ int main(int argn, char **argv) {
 
   timer t;
 
-  // auto square = [&](int i)
-  //   {
-  //       return i * i;
-  //   };
-  //
-  // std::cout << "Square of 5 is : " << square(5) << std::endl;
+  if (config.MAX_CLQ) {
+    BronKerbosch algo(&adj, config);
+    algo.solve();
+    std::cout << filename << " " << algo.get_clique_counter() << " " << t.elapsed() << std::endl;
+  }
 
-  // BronKerbosch algo(&adj);
-  // algo.solve();
-  // std::cout << filename << " " << algo.get_clique_counter() << " " << t.elapsed() << std::endl;
+  else {
+    KPlex kplex(&adj, config);
+    if (config.TWOPLX) {
+      kplex.get_two_plexes();
+    }
+    else if (config.CONN_ONE_NR_CLQ) {
+      kplex.get_one_near_cliques_connected();
+    }
+    else if (config.ONE_NR_CLQ) {
+      kplex.get_one_near_cliques();
+    }
+    std::cout << filename << " " << kplex.get_kplex_counter() << " " << t.elapsed() << std::endl;
 
-  // std::cout << filename << " " << adj.size() << std::endl;
-  //
-  KPlex kplex(&adj);
-  kplex.get_two_plexes();
-  std::cout << filename << " " << kplex.get_kplex_counter() << " " << t.elapsed() << std::endl;
+  }
 
   return 0;
 }

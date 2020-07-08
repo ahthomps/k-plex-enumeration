@@ -4,6 +4,7 @@
 
 #include "../bronKerbosch/bronKerbosch.h"
 #include "../tools/fast_set.h"
+#include "../tools/config.h"
 
 #ifndef KPLEX_H_
 #define KPLEX_H_
@@ -11,11 +12,10 @@
 class KPlex {
 
   public:
-    bool _report_one_near_clique = false;
     bool _enumerate_connected_two_plex = true;
     size_t _kplex_counter = 0;
 
-    KPlex(std::vector<std::vector<int>> const *adj);
+    KPlex(std::vector<std::vector<int>> const *adj, Config &config);
     ~KPlex();
 
     size_t get_kplex_counter();

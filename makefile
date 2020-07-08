@@ -2,14 +2,14 @@
 
 all: main
 
-main: optimized/graph_io.o optimized/bronKerbosch.o optimized/kplex.o optimized/kplex.o main.cpp
-	g++ optimized/graph_io.o optimized/bronKerbosch.o optimized/kplex.o main.cpp -std=c++11 -Werror=all -o main
+main: optimized/graph_io.o optimized/bronKerbosch.o optimized/kplex.o optimized/kplex.o tools/config.h main.cpp
+	g++ optimized/graph_io.o optimized/bronKerbosch.o optimized/kplex.o main.cpp -O3 -std=c++11 -Werror=all -o main
 
 optimized/kplex.o: optimized/bronKerbosch.o kPlex/kplex.h kPlex/kplex.cpp
-	g++ kPlex/kplex.cpp -c -std=c++11 -o optimized/kplex.o
+	g++ kPlex/kplex.cpp -c -std=c++11 -O3 -o optimized/kplex.o
 
 optimized/bronKerbosch.o: bronKerbosch/bronKerbosch.cpp bronKerbosch/bronKerbosch.h
-	g++ bronKerbosch/bronKerbosch.cpp -c -std=c++11 -o optimized/bronKerbosch.o
+	g++ bronKerbosch/bronKerbosch.cpp -c -std=c++11 -O3 -o optimized/bronKerbosch.o
 
 optimized/graph_io.o: graph_access/graph_io.cpp graph_access/graph_io.h graph_access/graph_access.h
-	g++ graph_access/graph_io.cpp -c -std=c++11 -o optimized/graph_io.o
+	g++ graph_access/graph_io.cpp -c -std=c++11 -O3 -o optimized/graph_io.o
