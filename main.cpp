@@ -10,6 +10,7 @@
 #include "kPlex/kplex.h"
 
 #include "reductions/coreness.h"
+#include "reductions/cliqueness.h"
 
 std::vector<std::vector<int>> buildAdjG(graph_access &G) {
     std::vector<std::vector<int>> adj;
@@ -37,26 +38,31 @@ int main(int argn, char **argv) {
   graph_io::readGraphWeighted(G, filename);
   std::vector<std::vector<int>> adj = buildAdjG(G);
 
-  CorenessReduction coreness(&adj);
-  // std::vector<bool>* p_nodes_status = coreness.reduce(2);
   std::vector<bool>* p_nodes_status = NULL;
-  // std::cout << p_nodes_status << std::endl;
-  // exit(0);
 
-  // std::cout << "1: ";
-  // for (int v : adj[1]) std::cout << v << ", ";
-  // std::cout << std::endl;
-  // std::cout << "4: ";
-  // for (int v : adj[4]) std::cout << v << ", ";
-  // std::cout << std::endl;
-  // std::cout << "42: ";
-  // for (int v : adj[42]) std::cout << v << ", ";
-  // std::cout << std::endl;
-  // std::cout << "328: ";
-  // for (int v : adj[328]) std::cout << v << ", ";
-  // std::cout << std::endl;
-  //
-  // return 1;
+  timer s;
+
+  if (config.CORNESS || config.CLQNESS) {
+      std::vector<bool> nodes_status(adj.size(), true);
+
+      if (config.CORNESS) {
+          CorenessReduction coreness(&adj, &nodes_status);
+          // coreness.reduce(44, config.kplexNum);
+          coreness.reduce(44, 4);
+          p_nodes_status = &nodes_status;
+      }
+      if (config.CLQNESS) {
+          CliquenessReduction cliqueness(&adj, config, &nodes_status);
+          // cliqueness.reduce(config.kplexNum);
+          cliqueness.reduce(4);
+          p_nodes_status = &nodes_status;
+      }
+      size_t remaining_nodes_counter = 0;
+      for (bool node : nodes_status) if (node) remaining_nodes_counter++;
+      std::cout << filename << " " << adj.size() << " " << remaining_nodes_counter << " " << s.elapsed() << std::endl;
+  }
+
+  exit(0);
 
   timer t;
 

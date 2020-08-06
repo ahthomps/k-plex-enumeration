@@ -19,6 +19,10 @@ class Config {
     bool THREEPLX = false;
     bool CONN_TWO_NR_CLQ = false;
     bool CONNECTED = false;
+    bool CLQNESS = false;
+    bool CORNESS = false;
+
+    size_t kplexNum = 1;
 
     Config(int argn, char **argv) {
       if (argn == 2) {
@@ -39,17 +43,25 @@ class Config {
         std::string three_plex = "--3PLX";
         std::string conn_two_nr_clq = "--CONN2NRCLQ";
         std::string conn_threeplx = "--CONN3PLX";
+        std::string cliqueness = "--CLQNESS";
+        std::string coreness = "--CORNESS";
+        std::string reduce = "--RDCE";
 
         for (int i = 1; i < argn; i++) {
           if (argv[i] == max_clq) MAX_CLQ = true;
-          else if (argv[i] == twoplx) TWOPLX = true;
+          else if (argv[i] == twoplx) {
+              TWOPLX = true;
+              kplexNum = 2;
+          }
           else if (argv[i] == conn_twoplx) {
             TWOPLX = true;
             CONNECTED = true;
+            kplexNum = 2;
           }
           else if (argv[i] == conn_threeplx) {
               THREEPLX = true;
               CONNECTED = true;
+              kplexNum = 3;
           }
           else if (argv[i] == rpt_clq) RPT_CLQ = true;
           else if (argv[i] == one_nr_clq) ONE_NR_CLQ = true;
@@ -67,9 +79,20 @@ class Config {
           }
           else if (argv[i] == three_plex) {
               THREEPLX = true;
+              kplexNum = 3;
           }
           else if (argv[i] == conn_two_nr_clq) {
               CONN_TWO_NR_CLQ = true;
+          }
+          else if (argv[i] == cliqueness) {
+              CLQNESS = true;
+          }
+          else if (argv[i] == coreness) {
+              CORNESS = true;
+          }
+          else if (argv[i] == reduce) {
+              CLQNESS = true;
+              CORNESS = true;
           }
         }
       }

@@ -1,8 +1,7 @@
 #include <iostream>
 #include <vector>
 #include <iterator>
-
-#include "../tools/linked_list.h"
+#include <list>
 
 #ifndef CORENESS_H_
 #define CORENESS_H_
@@ -10,26 +9,20 @@
 class CorenessReduction {
     public:
         std::vector<std::vector<int>>& _adj;
+        std::vector<bool>& _nodes_status;
         size_t _N;
-        std::vector<bool> nodes_status;
-        std::vector<size_t> nodes_degree;
-        // std::vector<LinkedList::iterator> nodes_location;
+        std::vector<int> _degree;
 
-        CorenessReduction(std::vector<std::vector<int>> *adj);
+        CorenessReduction(std::vector<std::vector<int>> *adj, std::vector<bool> *nodes_status);
         ~CorenessReduction();
 
-        std::vector<bool>* reduce(size_t clique_size, size_t k_plex_num=1);
-        void adjust_neighbors(int node_to_remove);
+        void reduce(size_t const clique_size, size_t const kplex);
 
-        void print_nodes_by_degree();
-        void print_removed_nodes();
 
     private:
-        std::vector<std::vector<int>> nodes_by_deg;
-        // std::vector<LinkedList*> nodes_priority;
+        std::vector<std::list<int>> _vertices_by_deg;
+        std::vector<std::list<int>::iterator> _vertex_locater;
 
-        void get_nodes_by_deg();
-        // void get_nodes_priority();
 };
 
 #endif

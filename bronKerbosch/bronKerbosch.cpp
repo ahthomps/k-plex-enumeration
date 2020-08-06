@@ -69,12 +69,9 @@ void BronKerbosch::solve_on(std::vector<int> &P, std::vector<int> R, std::functi
 }
 
 void BronKerbosch::solve_recursion(std::vector<int> &P, std::vector<int> &R, std::vector<int> &X, std::vector<int> const &level_set_one, std::vector<int> const &level_set_two, std::function<bool(std::vector<std::vector<int>> const *, std::vector<int>, std::vector<int>, std::vector<int>)> check) {
-    if (P.empty() && X.empty() && check(&_adj, R, level_set_one, level_set_two)) {
+    if (P.empty() && X.empty() && !R.empty() && check(&_adj, R, level_set_one, level_set_two)) {
         _clique_counter++;
         if (_report_clique) {
-            // std::vector<int> R_copy;
-            // for (int const v : R) R_copy.push_back(v);
-            // std::sort(R_copy.begin(), R_copy.end());
             std::cout << ' ';
             for (int const r : R) std::cout << r << ',';
             std::cout << ' ' << std::endl;

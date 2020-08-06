@@ -1,99 +1,52 @@
 #include <iostream>
 #include <vector>
+#include <list>
 
 #include "coreness.h"
-#include "../tools/linked_list.h"
 
-CorenessReduction::CorenessReduction(std::vector<std::vector<int>> *adj) :
-    _adj(*adj)
+CorenessReduction::CorenessReduction(std::vector<std::vector<int>> *adj, std::vector<bool> *nodes_status) :
+    _adj(*adj), _nodes_status(*nodes_status)
 {
     _N = _adj.size();
-    nodes_status.resize(_N, true);
-    nodes_degree.resize(_N, 0);
-    get_nodes_by_deg();
-}
+    _vertices_by_deg.resize(_N);
+    _vertex_locater.resize(_N);
+    _degree.resize(_N);
 
-CorenessReduction::~CorenessReduction() {
-    // for (LinkedList *p_llist : nodes_priority) delete p_llist;
-}
-
-void CorenessReduction::get_nodes_by_deg() {
-    nodes_by_deg.resize(_N, {});
-    for (size_t node = 0; node < _adj.size(); node++) {
-        size_t degree = _adj[node].size();
-        nodes_by_deg[degree].push_back(static_cast<int>(node));
-        nodes_degree[node] = degree;
+    for (size_t i = 0; i < _N; i++) {
+        _degree[i] = _adj[i].size();
+        _vertices_by_deg[_degree[i]].push_front(static_cast<int>(i));
+        _vertex_locater[i] = _vertices_by_deg[_degree[i]].begin();
     }
 }
 
-// void CorenessReduction::get_nodes_priority() {
-//     nodes_priority.clear();
-//     for (size_t i = 0; i < _N; i++) {
-//         LinkedList *p_llist = new LinkedList;
-//         nodes_priority.push_back(p_llist);
-//     }
-//     for (size_t node = 0; node < _adj.size(); node++) {
-//         size_t degree = _adj[node].size();
-//         nodes_priority[degree].add(static_cast<int>);
-//         nodes_degree[node] = degree;
-//     }
-// }
+CorenessReduction::~CorenessReduction() {}
 
-void CorenessReduction::print_nodes_by_degree() {
-    for (size_t i = 0; i < nodes_by_deg.size(); i++) {
-        std::cout << i << ": ";
-        for (int v : nodes_by_deg[i]) std::cout << v << ",";
-        std::cout << std::endl;
-    }
-}
-
-void CorenessReduction::adjust_neighbors(int node_to_remove) {
-    for (int v : _adj[node_to_remove]) {
-        if (!nodes_status[v]) continue;
-
-        size_t old_degree = nodes_degree[v];
-
-        size_t index_v = 0;
-        for (int u : nodes_by_deg[old_degree]) {
-            if (u == v) break;
-            index_v++;
-        }
-        nodes_by_deg[old_degree][index_v] = nodes_by_deg[old_degree][nodes_by_deg[old_degree].size() - 1];
-        nodes_by_deg[old_degree].pop_back();
-
-        nodes_by_deg[old_degree - 1].push_back(v);
-        nodes_degree[v] = nodes_degree[v] - 1;
-    }
-}
-
-std::vector<bool>* CorenessReduction::reduce(size_t clique_size, size_t k_plex_num) {
-    size_t min_degree = clique_size - k_plex_num;
+void CorenessReduction::reduce(size_t const clique_size, size_t const kplex) {
+    size_t const min_degree = clique_size - kplex;
     size_t current_degree = 0;
 
-    while (current_degree != min_degree) {
-        std::vector<int> &nodes = nodes_by_deg[current_degree];
+    while (current_degree < min_degree) {
+        if (!_vertices_by_deg[current_degree].empty()) {
+            int const vertex = _vertices_by_deg[current_degree].front();
+            _vertices_by_deg[current_degree].erase(_vertex_locater[vertex]);
+            _degree[vertex] = -1;
+            _nodes_status[vertex] = false;
 
-        if (nodes.empty()) {
-            current_degree++;
-            continue;
+            std::vector<int> const &vertex_neighborhood = _adj[vertex];
+            for (int const neighbor : vertex_neighborhood) {
+                if (_degree[neighbor] == -1) continue;
+                _vertices_by_deg[_degree[neighbor]].erase(_vertex_locater[neighbor]);
+                _degree[neighbor]--;
+
+                if (_degree[neighbor] == -1) {
+                    _nodes_status[neighbor] = false;
+                    continue;
+                }
+                _vertices_by_deg[_degree[neighbor]].push_front(neighbor);
+                _vertex_locater[neighbor] = _vertices_by_deg[_degree[neighbor]].begin();
+            }
+            current_degree = 0;
         }
-
-        while (!nodes.empty()) {
-            int node_to_remove = nodes[0];
-            adjust_neighbors(node_to_remove);
-            nodes[0] = nodes[nodes.size() - 1];
-            nodes.pop_back();
-            nodes_status[node_to_remove] = false;
-        }
-
-        current_degree = 0;
-    }
-
-    return &nodes_status;
-}
-
-void CorenessReduction::print_removed_nodes() {
-    for (size_t i = 0; i < _N; i++) {
-        if (!nodes_status[i]) std::cout << i << std::endl;
+        else current_degree++;
     }
 }
