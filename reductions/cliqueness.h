@@ -28,8 +28,8 @@ class CliquenessReduction {
 
         std::function<bool(std::vector<std::vector<int>> const *, std::vector<int>, std::vector<int>, std::vector<int>)> _update_largest_clique = [&] (std::vector<std::vector<int>> const * p_adj, std::vector<int> R, std::vector<int> level_set_one, std::vector<int> level_set_two) -> bool {
             for (int const v : R) {
-                if (_max_clq[v] < R.size()) _max_clq[v] = R.size();
-                if (_max_clq_size < R.size()) _max_clq_size = R.size();
+                if (_max_clq[v] < int(R.size())) _max_clq[v] = R.size();
+                if (_max_clq_size < int(R.size())) _max_clq_size = R.size();
             }
             return true;
         };
