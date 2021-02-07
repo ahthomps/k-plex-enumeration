@@ -5,12 +5,14 @@
 #include "tools/timer.h"
 #include "tools/config.h"
 #include "tools/linked_list.h"
+#include "tools/graph_tools.h"
 #include "graph_access/graph_io.h"
 #include "bronKerbosch/bronKerbosch.h"
 #include "kPlex/kplex.h"
 
 #include "reductions/coreness.h"
 #include "reductions/cliqueness.h"
+#include "reductions/triangle.h"
 
 std::vector<std::vector<int>> buildAdjG(graph_access &G) {
     std::vector<std::vector<int>> adj;
@@ -26,88 +28,124 @@ std::vector<std::vector<int>> buildAdjG(graph_access &G) {
 
 int main(int argn, char **argv) {
 
-  if (argn < 2) {
-    std::cout << "Cannot find graph" << std::endl;
-    exit(1);
-  }
-
-  Config config(argn, argv);
-
-  graph_access G;
-  std::string filename = argv[1];
-  graph_io::readGraphWeighted(G, filename);
-  std::vector<std::vector<int>> adj = buildAdjG(G);
-
-  std::vector<bool>* p_nodes_status = NULL;
-
-  timer s;
-
-  if (config.CORNESS || config.CLQNESS) {
-      std::vector<bool> nodes_status(adj.size(), true);
-
-      if (config.CORNESS) {
-          CorenessReduction coreness(&adj, &nodes_status);
-          // coreness.reduce(44, config.kplexNum);
-          coreness.reduce(44, 4);
-          p_nodes_status = &nodes_status;
-      }
-      if (config.CLQNESS) {
-          CliquenessReduction cliqueness(&adj, config, &nodes_status);
-          // cliqueness.reduce(config.kplexNum);
-          cliqueness.reduce(4);
-          p_nodes_status = &nodes_status;
-      }
-      size_t remaining_nodes_counter = 0;
-      for (bool node : nodes_status) if (node) remaining_nodes_counter++;
-      std::cout << filename << " " << adj.size() << " " << remaining_nodes_counter << " " << s.elapsed() << std::endl;
-  }
-
-  exit(0);
-
-  timer t;
-
-  if (config.TEST && !config.RPT_CLQ) {
-      std::cout << "must add '--RPT_CLQ' flag when testing" << std::endl;
-      exit(0);
-  }
-  if (config.MAX_CLQ && config.WRT_3PLX) {
-      KPlex kplex(&adj, config);
-      kplex.get_maximal_cliques_wrt_three_plexes();
-      if (!config.TEST) std::cout << filename << " " << kplex.get_kplex_counter() << " " << t.elapsed() << std::endl;
-  }
-  else if (config.MAX_CLQ) {
-    BronKerbosch algo(&adj, config, p_nodes_status);
-    algo.solve();
-    if (!config.TEST) std::cout << filename << " " << algo.get_clique_counter() << " " << t.elapsed() << std::endl;
-  }
-
-  else {
-    KPlex kplex(&adj, config);
-    if (config.TWOPLX) {
-      kplex.get_two_plexes();
+    if (argn < 2) {
+        std::cout << "Cannot find graph" << std::endl;
+        exit(1);
     }
-    else if (config.CONN_ONE_NR_CLQ) {
-      kplex.get_one_near_cliques_connected();
+
+    Config config(argn, argv);
+
+    graph_access G;
+    std::string filename = argv[1];
+    graph_io::readGraphWeighted(G, filename);
+    std::vector<std::vector<int>> adj = buildAdjG(G);
+
+    std::vector<bool> nodes_status(adj.size(), true);
+
+    timer t;
+
+    // Testing Triangle Reduction
+    TriangleReduction triangle(&adj, &nodes_status);
+    triangle.reduce(config.kplexNum, config.minCliqueSize);
+    
+    GraphTools graph_tools;
+    std::vector<std::vector<int>> new_adj;
+    graph_tools.subgraph(adj, nodes_status, new_adj);
+
+    graph_access G_prime;
+    graph_io::readGraphAdj(G_prime, new_adj);
+
+    std::string new_graph_name = "examples/wiki-Vote-red.graph";
+    graph_io::writeGraph(G_prime, new_graph_name);
+
+
+    return 0;
+
+    // std::vector<bool>* p_nodes_status = NULL;
+
+    if ((config.CORNESS || config.CLQNESS) && config.minCliqueSize > 1) {
+
+        bool save_RPT_CLQ = config.RPT_CLQ;
+        config.set_RPT_CLQ(false);
+
+        if (config.CORNESS) {
+            CorenessReduction coreness(&adj, &nodes_status);
+            coreness.reduce(config.minCliqueSize, config.kplexNum);
+            // coreness.reduce(44, 4);
+            // p_nodes_status = &nodes_status;
+        }
+        if (config.CLQNESS) {
+            CliquenessReduction cliqueness(&adj, config, &nodes_status);
+            cliqueness.reduce(config.minCliqueSize, config.kplexNum);
+            // cliqueness.reduce(4);
+            // p_nodes_status = &nodes_status;
+        }
+        if (config.PRINT_NODES_STATUS) {
+            size_t remaining_nodes_counter = 0;
+            for (size_t i = 0; i < nodes_status.size(); i++) {
+                if (nodes_status[i]) {
+                  remaining_nodes_counter++;
+                }
+                // else std::cout << i << std::endl;
+            }
+            std::cout << filename << " " << remaining_nodes_counter << " " << t.elapsed() << std::endl;
+        }
+
+        config.set_RPT_CLQ(save_RPT_CLQ);
     }
-    else if (config.ONE_NR_CLQ && config.WRT_3PLX) {
-        kplex.get_one_near_cliques_wrt_three_plexes();
-    }
-    else if (config.ONE_NR_CLQ) {
-      kplex.get_one_near_cliques();
-    }
-    else if (config.TWO_NR_CLQ) {
-      kplex.get_two_near_cliques();
-    }
-    else if (config.THREEPLX) {
-        kplex.get_three_plexes();
-    }
-    else if (config.CONN_TWO_NR_CLQ) {
-        kplex.get_two_near_cliques_connected();
-    }
+
     if (!config.TEST) {
-        std::cout << filename << " " << kplex.get_kplex_counter() << " " << t.elapsed() << std::endl;
+      size_t counter = 0;
+      for (size_t i = 0; i < nodes_status.size(); i++) {
+          if (nodes_status[i]) {
+              counter++;
+          }
+      }
+      std::cout << "nodes remaining after reductions... " << counter << std::endl;
     }
-  }
 
-  return 0;
+    if (config.TEST && !config.RPT_CLQ) {
+        std::cout << "must add '--RPT_CLQ' flag when testing" << std::endl;
+        exit(0);
+    }
+    if (config.MAX_CLQ && config.WRT_3PLX) {
+        KPlex kplex(&adj, config, &nodes_status, config.minCliqueSize);
+        kplex.get_maximal_cliques_wrt_three_plexes();
+        if (!config.TEST) std::cout << filename << " " << kplex.get_kplex_counter() << " " << t.elapsed() << std::endl;
+    }
+    else if (config.MAX_CLQ) {
+        BronKerbosch algo(&adj, config, &nodes_status, config.minCliqueSize);
+        algo.solve();
+        if (!config.TEST) std::cout << filename << " " << algo.get_clique_counter() << " " << t.elapsed() << std::endl;
+    }
+
+    else {
+        KPlex kplex(&adj, config, &nodes_status, config.minCliqueSize);
+        if (config.TWOPLX) {
+            kplex.get_two_plexes();
+        }
+        else if (config.CONN_ONE_NR_CLQ) {
+            kplex.get_one_near_cliques_connected();
+        }
+        else if (config.ONE_NR_CLQ && config.WRT_3PLX) {
+            kplex.get_one_near_cliques_wrt_three_plexes();
+        }
+        else if (config.ONE_NR_CLQ) {
+            kplex.get_one_near_cliques();
+        }
+        else if (config.TWO_NR_CLQ) {
+            kplex.get_two_near_cliques();
+        }
+        else if (config.THREEPLX) {
+            kplex.get_three_plexes();
+        }
+        else if (config.CONN_TWO_NR_CLQ) {
+            kplex.get_two_near_cliques_connected();
+        }
+        if (!config.TEST) {
+            std::cout << filename << " " << kplex.get_kplex_counter() << " " << t.elapsed() << std::endl;
+        }
+    }
+
+    return 0;
 }

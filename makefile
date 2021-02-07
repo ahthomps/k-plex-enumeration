@@ -2,8 +2,8 @@
 
 all: main
 
-main: optimized/graph_io.o optimized/bronKerbosch.o optimized/kplex.o optimized/kplex.o optimized/coreness.o optimized/cliqueness.o tools/config.h main.cpp
-	g++ optimized/graph_io.o optimized/bronKerbosch.o optimized/kplex.o optimized/coreness.o optimized/cliqueness.o main.cpp -O3 -std=c++11 -Werror=all -o main
+main: optimized/graph_io.o optimized/bronKerbosch.o optimized/kplex.o optimized/kplex.o optimized/coreness.o optimized/cliqueness.o optimized/triangle.o tools/config.h main.cpp
+	g++ optimized/graph_io.o optimized/bronKerbosch.o optimized/kplex.o optimized/coreness.o optimized/cliqueness.o optimized/triangle.o main.cpp -O3 -std=c++11 -Werror=all -o main
 
 optimized/kplex.o: optimized/bronKerbosch.o tools/graph_tools.h kPlex/kplex.h kPlex/kplex.cpp
 	g++ kPlex/kplex.cpp -c -std=c++11 -O3 -o optimized/kplex.o
@@ -19,3 +19,6 @@ optimized/coreness.o: reductions/coreness.cpp reductions/coreness.h
 
 optimized/cliqueness.o: reductions/cliqueness.cpp reductions/cliqueness.h
 	g++ reductions/cliqueness.cpp -c -std=c++11 -O3 -o optimized/cliqueness.o
+
+optimized/triangle.o: reductions/triangle.cpp reductions/triangle.h
+	g++ reductions/triangle.cpp -c -std=c++11 -O3 -o optimized/triangle.o

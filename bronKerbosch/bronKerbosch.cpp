@@ -6,8 +6,8 @@
 #include "../tools/fast_set.h"
 #include "../tools/config.h"
 
-BronKerbosch::BronKerbosch(std::vector<std::vector<int>> const *adj, Config &config, std::vector<bool> const *p_nodes_status) :
-  _adj(*adj), _p_nodes_status(p_nodes_status)
+BronKerbosch::BronKerbosch(std::vector<std::vector<int>> const *adj, Config &config, std::vector<bool> const *nodes_status, size_t min_size) :
+  _adj(*adj), _nodes_status(*nodes_status), _min_size(min_size)
 {
   _N = _adj.size();
   _used.set_fast_set(_N);
@@ -21,13 +21,8 @@ size_t BronKerbosch::get_clique_counter() {
 
 void BronKerbosch::solve(std::function<bool(std::vector<std::vector<int>>const *, std::vector<int>, std::vector<int>, std::vector<int>)> check, bool find_level_sets) {
     std::vector<int> P;
-    if (_p_nodes_status != NULL) {
-        for (size_t i = 0; i < _N; i++) {
-            if ((*_p_nodes_status)[i]) P.push_back(static_cast<int>(i));
-        }
-    }
-    else {
-        for (int i = 0; i < static_cast<int>(_N); i++) P.push_back(i);
+    for (size_t i = 0; i < _N; i++) {
+        if (_nodes_status[i]) P.push_back(static_cast<int>(i));
     }
     std::vector<int> R;
 
@@ -69,12 +64,11 @@ void BronKerbosch::solve_on(std::vector<int> &P, std::vector<int> R, std::functi
 }
 
 void BronKerbosch::solve_recursion(std::vector<int> &P, std::vector<int> &R, std::vector<int> &X, std::vector<int> const &level_set_one, std::vector<int> const &level_set_two, std::function<bool(std::vector<std::vector<int>> const *, std::vector<int>, std::vector<int>, std::vector<int>)> check) {
-    if (P.empty() && X.empty() && !R.empty() && check(&_adj, R, level_set_one, level_set_two)) {
+    if (P.empty() && X.empty() && !R.empty() && R.size() >= _min_size && check(&_adj, R, level_set_one, level_set_two)) {
         _clique_counter++;
         if (_report_clique) {
-            std::cout << ' ';
             for (int const r : R) std::cout << r << ',';
-            std::cout << ' ' << std::endl;
+            std::cout << std::endl;
         }
         return;
     }

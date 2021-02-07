@@ -1,5 +1,6 @@
 #include <iostream>
 #include <string>
+#include <sstream>
 
 #ifndef CONFIG_H_
 #define CONFIG_H_
@@ -21,8 +22,10 @@ class Config {
     bool CONNECTED = false;
     bool CLQNESS = false;
     bool CORNESS = false;
+    bool PRINT_NODES_STATUS = false;
 
     size_t kplexNum = 1;
+    size_t minCliqueSize = 1;
 
     Config(int argn, char **argv) {
       if (argn == 2) {
@@ -46,9 +49,31 @@ class Config {
         std::string cliqueness = "--CLQNESS";
         std::string coreness = "--CORNESS";
         std::string reduce = "--RDCE";
+        std::string print_nodes_status = "--NDSTATS";
+        std::string min_clique_size = "--MINCLQSIZE=";
+        std::string set_k = "--k=";
 
         for (int i = 1; i < argn; i++) {
-          if (argv[i] == max_clq) MAX_CLQ = true;
+            std::string argv_i = argv[i];
+
+            if (argv_i.find('=') != std::string::npos) {
+				std::string first_part;
+				for (size_t i = 0; i <= argv_i.find('='); i++) {
+					first_part.push_back(argv_i[i]);
+				}
+				std::string second_part;
+				for (size_t i = argv_i.find('=') + 1; i < argv_i.size(); i++) {
+					second_part.push_back(argv_i[i]);
+				}
+				std::istringstream iss(second_part);
+				size_t value;
+				iss >> value;
+				if (!first_part.compare(min_clique_size)) {
+					minCliqueSize = value;
+        }
+        else if (!first_part.compare(set_k)) kplexNum = value;
+			}
+          else if (argv[i] == max_clq) MAX_CLQ = true;
           else if (argv[i] == twoplx) {
               TWOPLX = true;
               kplexNum = 2;
@@ -94,8 +119,15 @@ class Config {
               CLQNESS = true;
               CORNESS = true;
           }
+          else if (argv[i] == print_nodes_status) {
+              PRINT_NODES_STATUS = true;
+          }
         }
       }
+    }
+
+    void set_RPT_CLQ(bool new_RPT_CLQ) {
+        RPT_CLQ = new_RPT_CLQ;
     }
 };
 

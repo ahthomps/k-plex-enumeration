@@ -19,8 +19,6 @@ void CliquenessReduction::reduce(size_t const kplex) {
     BronKerbosch maxclq_algo(&_adj, _config, &_nodes_status);
     maxclq_algo.solve(_update_largest_clique);
 
-    std::cout << "max clique size: " << _max_clq_size << " kplex: " << kplex << std::endl;
-
     size_t min_clique_size = std::ceil(_max_clq_size / kplex);
 
     for (size_t i = 0; i < _max_clq.size(); i++) {

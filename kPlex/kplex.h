@@ -17,7 +17,7 @@ class KPlex {
     size_t _kplex_counter = 0;
     bool _report_clique = false;
 
-    KPlex(std::vector<std::vector<int>> const *adj, Config &config);
+    KPlex(std::vector<std::vector<int>> const *adj, Config &config, std::vector<bool> const *nodes_status, size_t min_size=1);
     ~KPlex();
 
     size_t get_kplex_counter();
@@ -42,9 +42,11 @@ class KPlex {
 
   private:
     const std::vector<std::vector<int>>& _adj;
+    const std::vector<bool>& _nodes_status;
     FastSet _used;
     GraphTools _graph_tools;
     size_t _N;
+    size_t _min_size;
 
     BronKerbosch* _maximal_clique_algo;
 
