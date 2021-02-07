@@ -3,7 +3,7 @@
 all: main
 
 main: optimized/graph_io.o optimized/bronKerbosch.o optimized/kplex.o optimized/kplex.o optimized/coreness.o optimized/cliqueness.o optimized/triangle.o tools/config.h main.cpp
-	g++ optimized/graph_io.o optimized/bronKerbosch.o optimized/kplex.o optimized/coreness.o optimized/cliqueness.o optimized/triangle.o main.cpp -O3 -std=c++11 -Werror=all -o main
+	g++ optimized/graph_io.o optimized/bronKerbosch.o optimized/kplex.o optimized/coreness.o optimized/cliqueness.o optimized/triangle.o main.cpp -O3 -std=c++11 -o main
 
 optimized/kplex.o: optimized/bronKerbosch.o tools/graph_tools.h kPlex/kplex.h kPlex/kplex.cpp
 	g++ kPlex/kplex.cpp -c -std=c++11 -O3 -o optimized/kplex.o
