@@ -51,7 +51,6 @@ void TriangleReduction::count_triangles() {
 }
 
 void TriangleReduction::count_triangles_containing_vertex(int const u) {
-    assert(_nodes_status[u]);
     _triangles[u] = 0;
     std::vector<int> u_neighborhood = _adj[u];
     if (u_neighborhood.empty()) return;
