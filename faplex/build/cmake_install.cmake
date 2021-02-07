@@ -1,4 +1,4 @@
-# Install script for directory: /Users/almathompson/Research/faplex
+# Install script for directory: /Users/almathompson/Research/k-plex-enumeration/faplex
 
 # Set the install prefix
 if(NOT DEFINED CMAKE_INSTALL_PREFIX)
@@ -45,5 +45,5 @@ endif()
 
 string(REPLACE ";" "\n" CMAKE_INSTALL_MANIFEST_CONTENT
        "${CMAKE_INSTALL_MANIFEST_FILES}")
-file(WRITE "/Users/almathompson/Research/faplex/build/${CMAKE_INSTALL_MANIFEST}"
+file(WRITE "/Users/almathompson/Research/k-plex-enumeration/faplex/build/${CMAKE_INSTALL_MANIFEST}"
      "${CMAKE_INSTALL_MANIFEST_CONTENT}")

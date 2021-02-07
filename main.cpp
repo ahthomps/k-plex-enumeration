@@ -47,6 +47,8 @@ int main(int argn, char **argv) {
     // Testing Triangle Reduction
     TriangleReduction triangle(&adj, &nodes_status);
     triangle.reduce(config.kplexNum, config.minCliqueSize);
+
+    double reduction_time = t.elapsed();
     
     GraphTools graph_tools;
     std::vector<std::vector<int>> new_adj;
@@ -55,8 +57,11 @@ int main(int argn, char **argv) {
     graph_access G_prime;
     graph_io::readGraphAdj(G_prime, new_adj);
 
-    std::string new_graph_name = "examples/wiki-Vote-red.graph";
+    std::string new_graph_name = "reduced.graph";
     graph_io::writeGraph(G_prime, new_graph_name);
+
+    std::cout << filename << " " << G.number_of_nodes() << " " << G.number_of_edges() << " ";
+    std::cout << G_prime.number_of_nodes() << " " << G_prime.number_of_edges() << " " << reduction_time << " ";
 
 
     return 0;

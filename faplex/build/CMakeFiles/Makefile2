@@ -63,10 +63,10 @@ RM = /usr/local/Cellar/cmake/3.19.0/bin/cmake -E rm -f
 EQUALS = =
 
 # The top-level source directory on which CMake was run.
-CMAKE_SOURCE_DIR = /Users/almathompson/Research/faplex
+CMAKE_SOURCE_DIR = /Users/almathompson/Research/k-plex-enumeration/faplex
 
 # The top-level build directory on which CMake was run.
-CMAKE_BINARY_DIR = /Users/almathompson/Research/faplex/build
+CMAKE_BINARY_DIR = /Users/almathompson/Research/k-plex-enumeration/faplex/build
 
 #=============================================================================
 # Directory level rules for the build root directory
@@ -93,14 +93,14 @@ clean: CMakeFiles/enplex.dir/clean
 CMakeFiles/enplex.dir/all:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/enplex.dir/build.make CMakeFiles/enplex.dir/depend
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/enplex.dir/build.make CMakeFiles/enplex.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/Users/almathompson/Research/faplex/build/CMakeFiles --progress-num=1,2,3 "Built target enplex"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/Users/almathompson/Research/k-plex-enumeration/faplex/build/CMakeFiles --progress-num=1,2,3 "Built target enplex"
 .PHONY : CMakeFiles/enplex.dir/all
 
 # Build rule for subdir invocation for target.
 CMakeFiles/enplex.dir/rule: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /Users/almathompson/Research/faplex/build/CMakeFiles 3
+	$(CMAKE_COMMAND) -E cmake_progress_start /Users/almathompson/Research/k-plex-enumeration/faplex/build/CMakeFiles 3
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 CMakeFiles/enplex.dir/all
-	$(CMAKE_COMMAND) -E cmake_progress_start /Users/almathompson/Research/faplex/build/CMakeFiles 0
+	$(CMAKE_COMMAND) -E cmake_progress_start /Users/almathompson/Research/k-plex-enumeration/faplex/build/CMakeFiles 0
 .PHONY : CMakeFiles/enplex.dir/rule
 
 # Convenience name for target.

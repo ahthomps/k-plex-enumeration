@@ -23,7 +23,8 @@ int EnuBundle::readBinaryGraph(const char* filepath) {
 	}
 	fread(&n, sizeof(ui), 1, f);
 	fread(&m, sizeof(ui), 1, f);
-	printf("n=%u, m=%u (undirected)\n", n, m);
+	// turned off for my testing
+	// printf("n=%u, m=%u (undirected)\n", n, m);
 	ui* degree = new ui[n];
 	fread(degree, sizeof(ui), n, f);
 
@@ -934,9 +935,10 @@ void EnuBundle::enumPlex(ui _k, ui _lb, uli _maxsec, ui _isdecompose, ui _quiete
 		branch();
 	}
 	enumclk = clock();
-	printf("Number of %u-cplex larger than %u:  %u\n", k, lb, cntplex);
-	printf("Total search time %.2f\n", Utility::elapse_seconds(startclk, enumclk));
-	printf("Sort time %.2f\n", Utility::elapse_seconds(startclk, sortclk));
+	printf("%u %.2f\n", cntplex, Utility::elapse_seconds(startclk, enumclk));
+	// printf("Number of %u-cplex larger than %u:  %u\n", k, lb, cntplex);
+	// printf("Total search time %.2f\n", Utility::elapse_seconds(startclk, enumclk));
+	// printf("Sort time %.2f\n", Utility::elapse_seconds(startclk, sortclk));
 	//printf("Totoal nodes %u \n", nnodes);
 }
 

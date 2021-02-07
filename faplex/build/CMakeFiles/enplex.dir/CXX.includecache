@@ -6,7 +6,7 @@
 
 #IncludeRegexTransform: 
 
-/Users/almathompson/Research/faplex/Defines.h
+/Users/almathompson/Research/k-plex-enumeration/faplex/Defines.h
 ctime
 -
 cstdlib
@@ -38,15 +38,15 @@ map
 cassert
 -
 
-/Users/almathompson/Research/faplex/EnuBundle.cpp
+/Users/almathompson/Research/k-plex-enumeration/faplex/EnuBundle.cpp
 fstream
 -
 EnuBundle.h
-/Users/almathompson/Research/faplex/EnuBundle.h
+/Users/almathompson/Research/k-plex-enumeration/faplex/EnuBundle.h
 Utility.h
-/Users/almathompson/Research/faplex/Utility.h
+/Users/almathompson/Research/k-plex-enumeration/faplex/Utility.h
 
-/Users/almathompson/Research/faplex/EnuBundle.h
+/Users/almathompson/Research/k-plex-enumeration/faplex/EnuBundle.h
 string
 -
 vector
@@ -70,55 +70,23 @@ ctime
 climits
 -
 Defines.h
-/Users/almathompson/Research/faplex/Defines.h
+/Users/almathompson/Research/k-plex-enumeration/faplex/Defines.h
 RandList.h
-/Users/almathompson/Research/faplex/RandList.h
+/Users/almathompson/Research/k-plex-enumeration/faplex/RandList.h
 LinearHeap.h
-/Users/almathompson/Research/faplex/LinearHeap.h
+/Users/almathompson/Research/k-plex-enumeration/faplex/LinearHeap.h
 
-/Users/almathompson/Research/faplex/LinearHeap.h
+/Users/almathompson/Research/k-plex-enumeration/faplex/LinearHeap.h
 Defines.h
-/Users/almathompson/Research/faplex/Defines.h
+/Users/almathompson/Research/k-plex-enumeration/faplex/Defines.h
 
-/Users/almathompson/Research/faplex/RandList.h
+/Users/almathompson/Research/k-plex-enumeration/faplex/RandList.h
 Defines.h
-/Users/almathompson/Research/faplex/Defines.h
+/Users/almathompson/Research/k-plex-enumeration/faplex/Defines.h
 algorithm
 -
 cassert
 -
 
-/Users/almathompson/Research/faplex/Utility.h
-
-/Users/almathompson/Research/faplex/args.hxx
-algorithm
--
-iterator
--
-exception
--
-functional
--
-sstream
--
-string
--
-tuple
--
-vector
--
-unordered_map
--
-unordered_set
--
-type_traits
--
-cstddef
--
-
-/Users/almathompson/Research/faplex/main.cpp
-EnuBundle.h
-/Users/almathompson/Research/faplex/EnuBundle.h
-args.hxx
-/Users/almathompson/Research/faplex/args.hxx
+/Users/almathompson/Research/k-plex-enumeration/faplex/Utility.h
 

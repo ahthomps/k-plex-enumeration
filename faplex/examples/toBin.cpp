@@ -183,7 +183,6 @@ int readRawDIM10Text(const char* filepath) {
 		std::sort(edges + pstart[u], edges + j);
 	}
 	pstart[n] = j;
-	std::cout << j << " " << m << " " << fmt << std::endl;
 	assert(j == m);
 	return 0;
 }

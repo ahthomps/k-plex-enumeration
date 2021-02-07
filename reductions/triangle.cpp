@@ -29,7 +29,7 @@ void TriangleReduction::clear_triangles() {
 }
 
 void TriangleReduction::count_triangles() {
-    std::cout << "counting triangles..." << std::endl;
+    // std::cout << "counting triangles..." << std::endl;
     for (int u = 0; u < int(_N); u++) {
         std::vector<int> u_neighborhood = _adj[u];
         if (!_nodes_status[u] || u_neighborhood.empty()) continue;
@@ -47,7 +47,7 @@ void TriangleReduction::count_triangles() {
             }
         }
     }
-    std::cout << ".... done!" << std::endl;
+    // std::cout << ".... done!" << std::endl;
 }
 
 void TriangleReduction::count_triangles_containing_vertex(int const u) {
@@ -97,11 +97,11 @@ void TriangleReduction::reduce(size_t const k, size_t const m) {
     FastSet need_updating;
     need_updating.set_fast_set(_N);
 
-    std::cout << "reducing..." << std::endl;
+    // std::cout << "reducing..." << std::endl;
     while (reduction_helper(min_triangles, need_updating)) 
         for (size_t v = 0; v < _N; v++) if (need_updating.get(v)) count_triangles_containing_vertex(v);
 
-    std::cout << std::endl << ".... done!" << std::endl;
+    // std::cout << std::endl << ".... done!" << std::endl;
 }
 
 
