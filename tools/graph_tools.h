@@ -1,6 +1,7 @@
 #include <iostream>
 #include <vector>
 #include <functional>
+#include <algorithm>
 
 #include "fast_set.h"
 
