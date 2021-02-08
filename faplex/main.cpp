@@ -50,7 +50,7 @@ int main(int argc, char** argv) {
 
     args::ValueFlag<int> TimeLim(parser, "Time limitation",
                                  "The cut down time in second", {'t', "time"},
-                                 90);
+                                 2000);
 
 	args::ValueFlag<int> LowerBound(parser, "Lower Bound", "The lower bound of the size of kplex", {'l', "lower"}, 1);
 
