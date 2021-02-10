@@ -40,10 +40,12 @@ void TriangleReduction::count_triangles() {
             for (int w : _adj[v]) _used.add(w);
             for (size_t j = i + 1; j < u_neighborhood.size(); j++) {
                 int w = u_neighborhood[j];
-                if (!_nodes_status[w] || !_used.get(w)) continue;
-                _triangles[u]++;
-                _triangles[v]++;
-                _triangles[w]++;
+                if (_nodes_status[w] && _used.get(w)) {
+                    _triangles[u]++;
+                    _triangles[v]++;
+                    _triangles[w]++;
+                    if (!(_nodes_status[u] && _nodes_status[v] && _nodes_status[w])) std::cout << "bad" << std::endl;
+                }
             }
         }
     }

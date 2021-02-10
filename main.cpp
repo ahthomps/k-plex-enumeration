@@ -26,6 +26,12 @@ std::vector<std::vector<int>> buildAdjG(graph_access &G) {
     return adj;
 }
 
+size_t count_remaining_nodes(std::vector<bool> &nodes_status) {
+    size_t count = 0;
+    for (bool node : nodes_status) if (node) count++;
+    return count;
+}
+
 int main(int argn, char **argv) {
 
     if (argn < 2) {
@@ -40,9 +46,21 @@ int main(int argn, char **argv) {
     graph_io::readGraphWeighted(G, filename);
     std::vector<std::vector<int>> adj = buildAdjG(G);
 
+    std::cout << filename << " " << G.number_of_nodes() << " " << G.number_of_edges() << " ";
+
     std::vector<bool> nodes_status(adj.size(), true);
 
     timer t;
+
+    CorenessReduction coreness(&adj, &nodes_status);
+    coreness.reduce(config.minCliqueSize, config.kplexNum);
+    std::cout << count_remaining_nodes(nodes_status) << " ";
+
+    CliquenessReduction cliqueness(&adj, config, &nodes_status);
+    cliqueness.reduce(config.minCliqueSize, config.kplexNum);
+    std::cout << count_remaining_nodes(nodes_status) << " ";
+
+    std::cout << t.elapsed() << " ";
 
     // Testing Triangle Reduction
     TriangleReduction triangle(&adj, &nodes_status);
@@ -60,12 +78,15 @@ int main(int argn, char **argv) {
     std::string new_graph_name = "reduced.graph";
     graph_io::writeGraph(G_prime, new_graph_name);
 
-    std::cout << filename << " " << G.number_of_nodes() << " " << G.number_of_edges() << " ";
     std::cout << G_prime.number_of_nodes() << " " << G_prime.number_of_edges() << " " << reduction_time << " ";
 
 
     return 0;
+}
 
+int old_main(std::string &filename, Config &config, std::vector<std::vector<int>> &adj, std::vector<bool> &nodes_status) {
+
+    timer t;
     // std::vector<bool>* p_nodes_status = NULL;
 
     if ((config.CORNESS || config.CLQNESS) && config.minCliqueSize > 1) {
