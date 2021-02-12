@@ -13,6 +13,7 @@
 #include "reductions/coreness.h"
 #include "reductions/cliqueness.h"
 #include "reductions/triangle.h"
+#include "reductions/reduce.h"
 
 std::vector<std::vector<int>> buildAdjG(graph_access &G) {
     std::vector<std::vector<int>> adj;
@@ -52,21 +53,33 @@ int main(int argn, char **argv) {
 
     timer t;
 
+    // Testing Triangle Reduction
+    // TriangleReduction triangle(&adj, &nodes_status);
+    // triangle.reduce(config.kplexNum, config.minCliqueSize);
+
+    // double triangles_red_time = t.elapsed();
+    // std::cout << count_remaining_nodes(nodes_status) << " " << triangles_red_time << " ";
+    // t.restart();
+
     CorenessReduction coreness(&adj, &nodes_status);
     coreness.reduce(config.minCliqueSize, config.kplexNum);
-    std::cout << count_remaining_nodes(nodes_status) << " ";
-
+    // std::cout << count_remaining_nodes(nodes_status) << " ";
+    std::cout << t.elapsed() << " ";
+    t.restart();
     CliquenessReduction cliqueness(&adj, config, &nodes_status);
     cliqueness.reduce(config.minCliqueSize, config.kplexNum);
-    std::cout << count_remaining_nodes(nodes_status) << " ";
+    // std::cout << count_remaining_nodes(nodes_status) << " ";
+    std::cout << t.elapsed() << std::endl;
+    // Reductions reductions(&adj, &nodes_status, &config);
+    // reductions.exhaustive_cliqueness_triangles();
 
-    std::cout << t.elapsed() << " ";
+    return 0;
 
-    // Testing Triangle Reduction
-    TriangleReduction triangle(&adj, &nodes_status);
-    triangle.reduce(config.kplexNum, config.minCliqueSize);
+    TriangleReduction triangle2(&adj, &nodes_status);
+    triangle2.reduce(config.kplexNum, config.minCliqueSize);
 
-    double reduction_time = t.elapsed();
+    double conte_red_time = t.elapsed();
+    std::cout << count_remaining_nodes(nodes_status) << " " << conte_red_time << " ";
     
     GraphTools graph_tools;
     std::vector<std::vector<int>> new_adj;
@@ -78,7 +91,7 @@ int main(int argn, char **argv) {
     std::string new_graph_name = "reduced.graph";
     graph_io::writeGraph(G_prime, new_graph_name);
 
-    std::cout << G_prime.number_of_nodes() << " " << G_prime.number_of_edges() << " " << reduction_time << " ";
+    // std::cout << G_prime.number_of_nodes() << " " << G_prime.number_of_edges() << " " << triangles_red_time << " ";
 
 
     return 0;
