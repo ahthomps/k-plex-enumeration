@@ -13,7 +13,6 @@
 #include "reductions/coreness.h"
 #include "reductions/cliqueness.h"
 #include "reductions/triangle.h"
-#include "reductions/reduce.h"
 
 std::vector<std::vector<int>> buildAdjG(graph_access &G) {
     std::vector<std::vector<int>> adj;
