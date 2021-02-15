@@ -59,7 +59,7 @@ int main(int argn, char **argv) {
 
     // double triangles_red_time = t.elapsed();
     // std::cout << count_remaining_nodes(nodes_status) << " " << triangles_red_time << " ";
-    // t.restart();
+    // t.restart(); 
 
     CorenessReduction coreness(&adj, &nodes_status);
     coreness.reduce(config.minCliqueSize, config.kplexNum);
