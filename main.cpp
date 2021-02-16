@@ -63,12 +63,12 @@ int main(int argn, char **argv) {
 
     
     // std::cout << t.elapsed() << " ";
-    t.restart();
     CliquenessReduction cliqueness(&adj, config, &nodes_status);
     cliqueness.reduce(config.minCliqueSize, config.kplexNum);
     double clqness_red_time = t.elapsed();
     std::cout << count_remaining_nodes(nodes_status) << " ";
     std::cout << clqness_red_time << " ";
+    t.restart();
     // std::cout << t.elapsed() << std::endl;
     // Reductions reductions(&adj, &nodes_status, &config);
     // reductions.exhaustive_cliqueness_triangles();
