@@ -16,7 +16,7 @@ class CorenessReduction {
         CorenessReduction(std::vector<std::vector<int>> *adj, std::vector<bool> *nodes_status);
         ~CorenessReduction();
 
-        void reduce(size_t const clique_size, size_t const kplex);
+        bool reduce(size_t const clique_size, size_t const kplex);
 
 
     private:

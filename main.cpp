@@ -1,5 +1,6 @@
 #include <iostream>
 #include <vector>
+#include <iterator>
 #include <string>
 
 #include "tools/timer.h"
@@ -50,11 +51,32 @@ int main(int argn, char **argv) {
 
     std::vector<bool> nodes_status(adj.size(), true);
 
+    // std::vector<int> wah = {14, 2, 3, 4};
+    // for (int w : wah) std::cout << w << " ";
+    // std::cout << std::endl;
+    // std::vector<int>::iterator wah_it = --wah.end();
+    // wah.push_back(30);
+    // for (int w : wah) std::cout << w << " ";
+    // std::cout << std::endl;
+    // std::cout << *wah_it << " " << *--wah.end() << std::endl;
+
+    // return 0;
+
     timer t;
 
     // Testing Triangle Reduction
     // TriangleReduction triangle(&adj, &nodes_status);
-    // triangle.chiba_count_triangles();
+    // // triangle.chiba_count_triangles();
+    // triangle.count_4clqs();
+    // std::cout << t.elapsed() << std::endl;
+    // triangle.print_total_num_triangles();
+
+    // t.restart();
+    // TriangleReduction triangle2(&adj, &nodes_status);
+    // // triangle2.count_triangles();
+    // triangle2.bruteforce_count_4clqs();
+    // std::cout << t.elapsed() << std::endl;
+    // triangle2.print_total_num_triangles();
     // triangle.reduce(config.kplexNum, config.minCliqueSize);
 
     // double triangles_red_time = t.elapsed();
@@ -65,6 +87,8 @@ int main(int argn, char **argv) {
     // std::cout << t.elapsed() << " ";
     CliquenessReduction cliqueness(&adj, config, &nodes_status);
     cliqueness.reduce(config.minCliqueSize, config.kplexNum);
+    // CliquenessReduction cliqueness2(&adj, config, &nodes_status);
+    // cliqueness2.reduce(config.minCliqueSize, config.kplexNum);
     double clqness_red_time = t.elapsed();
     std::cout << count_remaining_nodes(nodes_status) << " ";
     std::cout << clqness_red_time << " ";
@@ -77,12 +101,21 @@ int main(int argn, char **argv) {
     coreness.reduce(config.minCliqueSize, config.kplexNum);
     double corness_red_time = t.elapsed();
     std::cout << count_remaining_nodes(nodes_status) << " ";
-    std::cout << corness_red_time << std::endl;
+    std::cout << corness_red_time << " ";
+
+    t.restart();
+    TriangleReduction triangle(&adj, &nodes_status);
+    triangle.reduce(config.kplexNum, config.minCliqueSize);
+    // triangle.count_4clqs();
+    double tri_red_time = t.elapsed();
+    std::cout << count_remaining_nodes(nodes_status) << " ";
+    std::cout << tri_red_time << std::endl;
+    // triangle.print_total_num_triangles();
 
     return 0;
 
-    TriangleReduction triangle2(&adj, &nodes_status);
-    triangle2.reduce(config.kplexNum, config.minCliqueSize);
+    // TriangleReduction triangle2(&adj, &nodes_status);
+    // triangle2.reduce(config.kplexNum, config.minCliqueSize);
 
     double conte_red_time = t.elapsed();
     std::cout << count_remaining_nodes(nodes_status) << " " << conte_red_time << " ";

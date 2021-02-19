@@ -21,9 +21,10 @@ CorenessReduction::CorenessReduction(std::vector<std::vector<int>> *adj, std::ve
 
 CorenessReduction::~CorenessReduction() {}
 
-void CorenessReduction::reduce(size_t const clique_size, size_t const kplex) {
+bool CorenessReduction::reduce(size_t const clique_size, size_t const kplex) {
     size_t const min_degree = clique_size - kplex;
     size_t current_degree = 0;
+    bool reduced = false;
 
     while (current_degree < min_degree) {
         if (!_vertices_by_deg[current_degree].empty()) {
@@ -31,6 +32,7 @@ void CorenessReduction::reduce(size_t const clique_size, size_t const kplex) {
             _vertices_by_deg[current_degree].erase(_vertex_locater[vertex]);
             _degree[vertex] = -1;
             _nodes_status[vertex] = false;
+            reduced = true;
 
             std::vector<int> const &vertex_neighborhood = _adj[vertex];
             for (int const neighbor : vertex_neighborhood) {
@@ -49,4 +51,6 @@ void CorenessReduction::reduce(size_t const clique_size, size_t const kplex) {
         }
         else current_degree++;
     }
+
+    return reduced;
 }

@@ -21,8 +21,8 @@ class CliquenessReduction {
         CliquenessReduction(std::vector<std::vector<int>> *adj, Config &config, std::vector<bool> *nodes_status);
         ~CliquenessReduction() {};
 
-        void reduce(size_t const clique_size, size_t const kplex);
-        void reduce(size_t const kplex);
+        bool reduce(size_t const clique_size, size_t const kplex);
+        bool reduce(size_t const kplex);
 
     private:
 
