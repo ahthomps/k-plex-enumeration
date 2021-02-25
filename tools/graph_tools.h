@@ -2,8 +2,12 @@
 #include <vector>
 #include <functional>
 #include <algorithm>
+#include <iterator>
+#include <list>
+#include <tuple>
 
 #include "fast_set.h"
+#include "timer.h"
 
 #ifndef GRAPH_TOOLS_H_
 #define GRAPH_TOOLS_H_
@@ -150,6 +154,83 @@ class GraphTools {
                 std::sort(adj_list.begin(), adj_list.end());
                 sub_adj.push_back(adj_list);
             }
+        }
+
+        void get_degeneracy_ordering(std::vector<std::vector<int>> &adj,
+                                     FastSet &used,
+                                     std::vector<std::tuple<size_t, size_t>> &nodes_and_degs,
+                                     std::vector<size_t> &degeneracy_ordering,
+                                     std::vector<int> &nodeID_to_degeneracy_mapping,
+                                     std::vector<std::vector<int>> &shadow_adj,
+                                     timer &t) {
+
+            size_t N = nodeID_to_degeneracy_mapping.size();
+            std::vector<size_t> degrees(N, 0);
+            std::vector<std::list<int>> outer(N);
+            std::vector<std::list<int>::iterator> locator(N);
+
+            used.clear();
+            size_t node;
+            size_t deg;
+            size_t max_deg = 0;
+            for (std::tuple<size_t, size_t> node_and_deg : nodes_and_degs) {
+                std::tie(node, deg) = node_and_deg;
+                used.add(node);
+                degrees[node] = deg;
+                outer[deg].push_back(node);
+                locator[node] = std::prev(outer[deg].end());
+                if (deg > max_deg) max_deg = deg;
+            }
+            // for (size_t deg : degrees) std::cout << deg << " ";
+            // std::cout << std::endl;
+
+            deg = 0;
+            while (deg <= max_deg) {
+                if (outer[deg].empty()) {
+                    deg += 1;
+                    continue;
+                }
+                // find some node in _outer[deg] (easiest is just the last one) and remove it
+                int node = outer[deg].back();                                           // look at the last node in the list
+                outer[deg].pop_back();                                                  // remove the node from the list 
+                // _degrees[node] = _N;                                                     // update _degrees so it is invalid
+                // _outer[_N].push_back(node);                                              // add it to list of invalid nodes 
+                // _locator[node] = std::prev(_outer[_N].end());                             // update _locator to make new location
+                used.remove(node);
+                nodeID_to_degeneracy_mapping[node] = (int) degeneracy_ordering.size();        // add node location in mapping
+                degeneracy_ordering.push_back((size_t) node);
+
+                size_t min_deg = deg;                                                   // keep track of whether or not we need to look at smaller _degrees
+                for (int neighbor : adj[node]) {
+                    if (!used.get(neighbor)) continue;                              // if neighbor is invalid skip
+                    shadow_adj[node].push_back(neighbor);
+                    size_t neighbor_deg = degrees[neighbor];
+                    if (outer[neighbor_deg].size() != 1 && outer[neighbor_deg].back() != neighbor) {    // if neighbor is at the back of the list dont need to swap
+                        int swap_node = outer[neighbor_deg].back();
+                        *locator[neighbor] = swap_node;
+                        locator[swap_node] = locator[neighbor];
+
+                    }
+                    outer[neighbor_deg].pop_back();                                     // remove neighbor from current degree list
+                    neighbor_deg--;                                                     
+                    outer[neighbor_deg].push_back(neighbor);                            // add neighbor to new degree list and update iterator/degree
+                    locator[neighbor] = std::prev(outer[neighbor_deg].end());
+                    degrees[neighbor] = neighbor_deg;
+
+                    if (neighbor_deg < min_deg) min_deg = neighbor_deg;
+                }
+
+                deg = min_deg;   
+            }
+            // for (size_t deg : degeneracy_ordering) std::cout << deg << " ";
+            // std::cout << std::endl;
+            // for (size_t v = 0; v < shadow_adj.size(); v++) {
+            //     std::cout << v << ": ";
+            //     for (int u : shadow_adj[v]) std::cout << u << " ";
+            //     std::cout << std::endl;
+            // }
+            return;
+
         }
 
     private:

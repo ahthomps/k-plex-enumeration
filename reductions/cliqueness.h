@@ -21,17 +21,27 @@ class CliquenessReduction {
         CliquenessReduction(std::vector<std::vector<int>> *adj, Config &config, std::vector<bool> *nodes_status);
         ~CliquenessReduction() {};
 
-        bool reduce(size_t const clique_size, size_t const kplex);
+        bool reduce(size_t const clique_size, size_t const kplex, std::string &filename);
         bool reduce(size_t const kplex);
+        bool reduce_old(size_t const clique_size, size_t const kplex);
 
     private:
 
-        std::function<bool(std::vector<std::vector<int>> const *, std::vector<int>, std::vector<int>, std::vector<int>)> _update_largest_clique = [&] (std::vector<std::vector<int>> const * p_adj, std::vector<int> R, std::vector<int> level_set_one, std::vector<int> level_set_two) -> bool {
+        void get_maximum_cliques(std::string &filename, std::function<void(std::vector<int>&)> callback);
+
+        std::function<bool(std::vector<std::vector<int>> const *, std::vector<int>, std::vector<int>, std::vector<int>)> _update_largest_clique_first = [&] (std::vector<std::vector<int>> const * p_adj, std::vector<int> R, std::vector<int> level_set_one, std::vector<int> level_set_two) -> bool {
             for (int const v : R) {
                 if (_max_clq[v] < int(R.size())) _max_clq[v] = R.size();
                 if (_max_clq_size < int(R.size())) _max_clq_size = R.size();
             }
             return true;
+        };
+
+        std::function<void(std::vector<int>&)> _update_largest_clique = [&] (std::vector<int> &clq) -> void {
+            for (int const v : clq) {
+                if (_max_clq[v] < int(clq.size())) _max_clq[v] = clq.size();
+                if (_max_clq_size < int(clq.size())) _max_clq_size = clq.size();
+            }
         };
 
 };

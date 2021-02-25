@@ -2,8 +2,8 @@
 
 all: main
 
-main: optimized/graph_io.o optimized/bronKerbosch.o optimized/kplex.o optimized/kplex.o optimized/coreness.o optimized/cliqueness.o optimized/triangle.o tools/config.h main.cpp
-	g++ optimized/graph_io.o optimized/bronKerbosch.o optimized/kplex.o optimized/coreness.o optimized/cliqueness.o optimized/triangle.o main.cpp -O3 -std=c++11 -o main
+main: optimized/graph_io.o optimized/bronKerbosch.o optimized/kplex.o optimized/kplex.o optimized/coreness.o optimized/cliqueness.o optimized/triangle.o optimized/four_cliques.o tools/config.h main.cpp
+	g++ optimized/graph_io.o optimized/bronKerbosch.o optimized/kplex.o optimized/coreness.o optimized/cliqueness.o optimized/triangle.o optimized/four_cliques.o main.cpp -O3 -std=c++11 -o main
 
 optimized/kplex.o: optimized/bronKerbosch.o tools/graph_tools.h kPlex/kplex.h kPlex/kplex.cpp
 	g++ kPlex/kplex.cpp -c -std=c++11 -O3 -o optimized/kplex.o
@@ -22,3 +22,6 @@ optimized/cliqueness.o: reductions/cliqueness.cpp reductions/cliqueness.h
 
 optimized/triangle.o: reductions/triangle.cpp reductions/triangle.h
 	g++ reductions/triangle.cpp -c -std=c++11 -O3 -o optimized/triangle.o
+
+optimized/four_cliques.o: reductions/four_cliques.cpp reductions/four_cliques.h
+	g++ reductions/four_cliques.cpp -c -std=c++11 -O3 -o optimized/four_cliques.o

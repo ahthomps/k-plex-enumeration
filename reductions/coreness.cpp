@@ -13,7 +13,9 @@ CorenessReduction::CorenessReduction(std::vector<std::vector<int>> *adj, std::ve
     _degree.resize(_N);
 
     for (size_t i = 0; i < _N; i++) {
-        _degree[i] = _adj[i].size();
+        size_t deg = 0;
+        for (int v : _adj[i]) if (_nodes_status[i]) deg++;
+        _degree[i] = deg;
         _vertices_by_deg[_degree[i]].push_front(static_cast<int>(i));
         _vertex_locater[i] = _vertices_by_deg[_degree[i]].begin();
     }

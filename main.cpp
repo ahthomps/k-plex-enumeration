@@ -14,6 +14,8 @@
 #include "reductions/coreness.h"
 #include "reductions/cliqueness.h"
 #include "reductions/triangle.h"
+#include "reductions/four_cliques.h"
+
 
 std::vector<std::vector<int>> buildAdjG(graph_access &G) {
     std::vector<std::vector<int>> adj;
@@ -33,6 +35,115 @@ size_t count_remaining_nodes(std::vector<bool> &nodes_status) {
     return count;
 }
 
+std::string run_reductions(std::vector<std::vector<int>> &adj, std::vector<bool> &nodes_status, Config &config, std::string &filename) {
+
+    timer t;
+
+    CorenessReduction coreness(&adj, &nodes_status);
+    coreness.reduce(config.minCliqueSize, config.kplexNum);
+    double coreness_time = t.elapsed();
+    size_t coreness_kernel = count_remaining_nodes(nodes_status);
+    t.restart();
+
+    CliquenessReduction cliqueness(&adj, config, &nodes_status);
+    cliqueness.reduce_old(config.minCliqueSize, config.kplexNum);
+    // cliqueness.reduce(config.minCliqueSize, config.kplexNum, filename);
+    double cliqueness_time = t.elapsed();
+    size_t cliqueness_kernel = count_remaining_nodes(nodes_status);
+    t.restart();
+
+    TriangleReduction triangle(adj, nodes_status);
+    triangle.reduce(config.kplexNum, config.minCliqueSize);
+    double triangle_time = t.elapsed();
+    size_t triangle_kernel = count_remaining_nodes(nodes_status);
+    t.restart();
+
+    FourCliquesReduction fourcliques(adj, nodes_status);
+    fourcliques.reduce(config.kplexNum, config.minCliqueSize);
+    double fourcliques_time = t.elapsed();
+    size_t fourcliques_kernel = count_remaining_nodes(nodes_status);
+
+    std::string output = (std::to_string(cliqueness_kernel) + " " + std::to_string(cliqueness_time) + " " +
+                          std::to_string(coreness_kernel) + " " + std::to_string(coreness_time) + " " +
+                          std::to_string(triangle_kernel) + " " + std::to_string(triangle_time) + " " +
+                          std::to_string(fourcliques_kernel) + " " + std::to_string(fourcliques_time) + " ");
+    return output;
+
+}
+
+std::string test_counting_triangles(std::vector<std::vector<int>> &adj, std::vector<bool> &nodes_status) {
+    
+    timer t; 
+
+    TriangleReduction triangle(adj, nodes_status);
+    triangle.bruteforce_count_triangles();
+    double bruteforce_time = t.elapsed();
+    size_t bruteforce_count = triangle.get_total_num_triangles();
+    t.restart();
+
+    TriangleReduction triangle2(adj, nodes_status);
+    triangle2.count_triangles();
+    double chiba_time = t.elapsed();
+    size_t chiba_count = triangle2.get_total_num_triangles();
+    t.restart();
+
+    std::string output = ("bruteforce: " + std::to_string(bruteforce_count) + " " + std::to_string(bruteforce_time) + "\n" +
+                          "chiba: " + std::to_string(chiba_count) + " " + std::to_string(chiba_time));
+    return output;
+}
+
+std::string test_counting_4clqs(std::vector<std::vector<int>> &adj, std::vector<bool> &nodes_status) {
+    
+    timer t; 
+
+    FourCliquesReduction fourcliques(adj, nodes_status);
+    fourcliques.count_4clqs();
+    double chiba_time = t.elapsed();
+    size_t chiba_count = fourcliques.get_total_num_four_cliques();
+    t.restart();
+
+    std::cout << "done with chiba..." << std::endl;
+
+    FourCliquesReduction fourcliques2(adj, nodes_status);
+    fourcliques2.bruteforce_count_4clqs();
+    double bruteforce_time = t.elapsed();
+    size_t bruteforce_count = fourcliques2.get_total_num_four_cliques();
+    t.restart();
+
+    std::string output = ("bruteforce: " + std::to_string(bruteforce_count) + " " + std::to_string(bruteforce_time) + "\n" +
+                          "chiba: " + std::to_string(chiba_count) + " " + std::to_string(chiba_time));
+    return output;
+}
+
+std::string run_4clq_reduction(std::vector<std::vector<int>> &adj, std::vector<bool> &nodes_status, Config &config) {
+
+    timer t;
+
+    FourCliquesReduction fourcliques(adj, nodes_status);
+    fourcliques.reduce(config.kplexNum, config.minCliqueSize);
+    double fourcliques_time = t.elapsed();
+    size_t fourcliques_kernel = count_remaining_nodes(nodes_status);
+
+    std::string output = std::to_string(fourcliques_kernel) + " " + std::to_string(fourcliques_time) + " ";
+
+    return output;  
+}
+
+void write_G_prime(std::vector<std::vector<int>> &adj, std::vector<bool> &nodes_status) {
+
+    GraphTools graph_tools;
+    std::vector<std::vector<int>> new_adj;
+    graph_tools.subgraph(adj, nodes_status, new_adj);
+
+    graph_access G_prime;
+    graph_io::readGraphAdj(G_prime, new_adj);
+
+    std::string new_graph_name = "reduced.graph";
+    graph_io::writeGraph(G_prime, new_graph_name);
+
+    return;
+}
+
 int main(int argn, char **argv) {
 
     if (argn < 2) {
@@ -47,91 +158,15 @@ int main(int argn, char **argv) {
     graph_io::readGraphWeighted(G, filename);
     std::vector<std::vector<int>> adj = buildAdjG(G);
 
-    std::cout << filename << " " << G.number_of_nodes() << " " << G.number_of_edges() << " ";
+    std::string header = filename + " " + std::to_string(G.number_of_nodes()) + " " + std::to_string(G.number_of_edges()) + " ";
 
     std::vector<bool> nodes_status(adj.size(), true);
 
-    // std::vector<int> wah = {14, 2, 3, 4};
-    // for (int w : wah) std::cout << w << " ";
-    // std::cout << std::endl;
-    // std::vector<int>::iterator wah_it = --wah.end();
-    // wah.push_back(30);
-    // for (int w : wah) std::cout << w << " ";
-    // std::cout << std::endl;
-    // std::cout << *wah_it << " " << *--wah.end() << std::endl;
-
-    // return 0;
-
     timer t;
 
-    // Testing Triangle Reduction
-    // TriangleReduction triangle(&adj, &nodes_status);
-    // // triangle.chiba_count_triangles();
-    // triangle.count_4clqs();
-    // std::cout << t.elapsed() << std::endl;
-    // triangle.print_total_num_triangles();
-
-    // t.restart();
-    // TriangleReduction triangle2(&adj, &nodes_status);
-    // // triangle2.count_triangles();
-    // triangle2.bruteforce_count_4clqs();
-    // std::cout << t.elapsed() << std::endl;
-    // triangle2.print_total_num_triangles();
-    // triangle.reduce(config.kplexNum, config.minCliqueSize);
-
-    // double triangles_red_time = t.elapsed();
-    // std::cout << count_remaining_nodes(nodes_status) << " " << triangles_red_time << " ";
-    // t.restart(); 
-
-    
-    // std::cout << t.elapsed() << " ";
-    CliquenessReduction cliqueness(&adj, config, &nodes_status);
-    cliqueness.reduce(config.minCliqueSize, config.kplexNum);
-    // CliquenessReduction cliqueness2(&adj, config, &nodes_status);
-    // cliqueness2.reduce(config.minCliqueSize, config.kplexNum);
-    double clqness_red_time = t.elapsed();
-    std::cout << count_remaining_nodes(nodes_status) << " ";
-    std::cout << clqness_red_time << " ";
-    t.restart();
-    // std::cout << t.elapsed() << std::endl;
-    // Reductions reductions(&adj, &nodes_status, &config);
-    // reductions.exhaustive_cliqueness_triangles();
-
-    CorenessReduction coreness(&adj, &nodes_status);
-    coreness.reduce(config.minCliqueSize, config.kplexNum);
-    double corness_red_time = t.elapsed();
-    std::cout << count_remaining_nodes(nodes_status) << " ";
-    std::cout << corness_red_time << " ";
-
-    t.restart();
-    TriangleReduction triangle(&adj, &nodes_status);
-    triangle.reduce(config.kplexNum, config.minCliqueSize);
-    // triangle.count_4clqs();
-    double tri_red_time = t.elapsed();
-    std::cout << count_remaining_nodes(nodes_status) << " ";
-    std::cout << tri_red_time << std::endl;
-    // triangle.print_total_num_triangles();
-
-    return 0;
-
-    // TriangleReduction triangle2(&adj, &nodes_status);
-    // triangle2.reduce(config.kplexNum, config.minCliqueSize);
-
-    double conte_red_time = t.elapsed();
-    std::cout << count_remaining_nodes(nodes_status) << " " << conte_red_time << " ";
-    
-    GraphTools graph_tools;
-    std::vector<std::vector<int>> new_adj;
-    graph_tools.subgraph(adj, nodes_status, new_adj);
-
-    graph_access G_prime;
-    graph_io::readGraphAdj(G_prime, new_adj);
-
-    std::string new_graph_name = "reduced.graph";
-    graph_io::writeGraph(G_prime, new_graph_name);
-
-    // std::cout << G_prime.number_of_nodes() << " " << G_prime.number_of_edges() << " " << triangles_red_time << " ";
-
+    std::string result = run_reductions(adj, nodes_status, config, filename);
+    std::cout << header << result;
+    write_G_prime(adj, nodes_status);
 
     return 0;
 }
@@ -154,7 +189,7 @@ int old_main(std::string &filename, Config &config, std::vector<std::vector<int>
         }
         if (config.CLQNESS) {
             CliquenessReduction cliqueness(&adj, config, &nodes_status);
-            cliqueness.reduce(config.minCliqueSize, config.kplexNum);
+            cliqueness.reduce(config.minCliqueSize, config.kplexNum, filename);
             // cliqueness.reduce(4);
             // p_nodes_status = &nodes_status;
         }
