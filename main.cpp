@@ -35,19 +35,43 @@ size_t count_remaining_nodes(std::vector<bool> &nodes_status) {
     return count;
 }
 
-std::string run_reductions(std::vector<std::vector<int>> &adj, std::vector<bool> &nodes_status, Config &config, std::string &filename) {
+std::string run_conte_reductions(std::vector<std::vector<int>> &adj, std::vector<bool> &nodes_status, Config &config, std::string &filename) {
 
     timer t;
 
     CorenessReduction coreness(&adj, &nodes_status);
-    coreness.reduce(config.minCliqueSize, config.kplexNum);
+    coreness.bruteforce_reduce(config.minCliqueSize, config.kplexNum);
+    // coreness.reduce(config.minCliqueSize, config.kplexNum);
     double coreness_time = t.elapsed();
     size_t coreness_kernel = count_remaining_nodes(nodes_status);
     t.restart();
 
     CliquenessReduction cliqueness(&adj, config, &nodes_status);
-    cliqueness.reduce_old(config.minCliqueSize, config.kplexNum);
-    // cliqueness.reduce(config.minCliqueSize, config.kplexNum, filename);
+    // cliqueness.reduce_old(config.minCliqueSize, config.kplexNum);
+    cliqueness.reduce(config.minCliqueSize, config.kplexNum, filename);
+    double cliqueness_time = t.elapsed();
+    size_t cliqueness_kernel = count_remaining_nodes(nodes_status);
+    t.restart();
+
+    std::string output = (std::to_string(coreness_kernel) + " " + std::to_string(coreness_time) + " " +
+                          std::to_string(cliqueness_kernel) + " " + std::to_string(cliqueness_time) + " ");
+    return output;
+}
+
+std::string run_reductions(std::vector<std::vector<int>> &adj, std::vector<bool> &nodes_status, Config &config, std::string &filename) {
+
+    timer t;
+
+    CorenessReduction coreness(&adj, &nodes_status);
+    coreness.bruteforce_reduce(config.minCliqueSize, config.kplexNum);
+    // coreness.reduce(config.minCliqueSize, config.kplexNum);
+    double coreness_time = t.elapsed();
+    size_t coreness_kernel = count_remaining_nodes(nodes_status);
+    t.restart();
+
+    CliquenessReduction cliqueness(&adj, config, &nodes_status);
+    // cliqueness.reduce_old(config.minCliqueSize, config.kplexNum);
+    cliqueness.reduce(config.minCliqueSize, config.kplexNum, filename);
     double cliqueness_time = t.elapsed();
     size_t cliqueness_kernel = count_remaining_nodes(nodes_status);
     t.restart();
@@ -63,8 +87,8 @@ std::string run_reductions(std::vector<std::vector<int>> &adj, std::vector<bool>
     double fourcliques_time = t.elapsed();
     size_t fourcliques_kernel = count_remaining_nodes(nodes_status);
 
-    std::string output = (std::to_string(cliqueness_kernel) + " " + std::to_string(cliqueness_time) + " " +
-                          std::to_string(coreness_kernel) + " " + std::to_string(coreness_time) + " " +
+    std::string output = (std::to_string(coreness_kernel) + " " + std::to_string(coreness_time) + " " +
+                          std::to_string(cliqueness_kernel) + " " + std::to_string(cliqueness_time) + " " +
                           std::to_string(triangle_kernel) + " " + std::to_string(triangle_time) + " " +
                           std::to_string(fourcliques_kernel) + " " + std::to_string(fourcliques_time) + " ");
     return output;
@@ -165,7 +189,7 @@ int main(int argn, char **argv) {
     timer t;
 
     std::string result = run_reductions(adj, nodes_status, config, filename);
-    std::cout << header << result;
+    std::cout << header << result;;
     write_G_prime(adj, nodes_status);
 
     return 0;

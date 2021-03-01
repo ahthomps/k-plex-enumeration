@@ -205,13 +205,14 @@ class GraphTools {
                     if (!used.get(neighbor)) continue;                              // if neighbor is invalid skip
                     shadow_adj[node].push_back(neighbor);
                     size_t neighbor_deg = degrees[neighbor];
-                    if (outer[neighbor_deg].size() != 1 && outer[neighbor_deg].back() != neighbor) {    // if neighbor is at the back of the list dont need to swap
-                        int swap_node = outer[neighbor_deg].back();
-                        *locator[neighbor] = swap_node;
-                        locator[swap_node] = locator[neighbor];
+                    // if (outer[neighbor_deg].size() != 1 && outer[neighbor_deg].back() != neighbor) {    // if neighbor is at the back of the list dont need to swap
+                    //     int swap_node = outer[neighbor_deg].back();
+                    //     *locator[neighbor] = swap_node;
+                    //     locator[swap_node] = locator[neighbor];
 
-                    }
-                    outer[neighbor_deg].pop_back();                                     // remove neighbor from current degree list
+                    // }
+                    // outer[neighbor_deg].pop_back();                                     // remove neighbor from current degree list
+                    outer[neighbor_deg].erase(locator[neighbor]);
                     neighbor_deg--;                                                     
                     outer[neighbor_deg].push_back(neighbor);                            // add neighbor to new degree list and update iterator/degree
                     locator[neighbor] = std::prev(outer[neighbor_deg].end());

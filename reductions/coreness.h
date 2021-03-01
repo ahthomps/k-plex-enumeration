@@ -16,12 +16,13 @@ class CorenessReduction {
         CorenessReduction(std::vector<std::vector<int>> *adj, std::vector<bool> *nodes_status);
         ~CorenessReduction();
 
+        bool bruteforce_reduce(size_t const clique_size, size_t const kplex);
         bool reduce(size_t const clique_size, size_t const kplex);
 
 
     private:
-        std::vector<std::list<int>> _vertices_by_deg;
-        std::vector<std::list<int>::iterator> _vertex_locater;
+        std::vector<std::list<int>> _outer;
+        std::vector<std::list<int>::iterator> _locater;
 
 };
 
