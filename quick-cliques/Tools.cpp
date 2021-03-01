@@ -473,7 +473,9 @@ void RunAndPrintStats(Algorithm *pAlgorithm, list<list<int>> &cliques, bool cons
 
     clock_t start = clock();
 
-    long const cliqueCount = pAlgorithm->Run(cliques);
+    vector<bool> place_holder;
+
+    long const cliqueCount = pAlgorithm->Run(cliques, place_holder);
 
     clock_t end = clock();
 
