@@ -35,7 +35,7 @@ size_t count_remaining_nodes(std::vector<bool> &nodes_status) {
     return count;
 }
 
-std::string run_conte_reductions(std::vector<std::vector<int>> &adj, std::vector<bool> &nodes_status, Config &config, std::string &filename) {
+std::string run_conte_reductions(std::vector<std::vector<int>> &adj, std::vector<bool> &nodes_status, Config &config) {
 
     timer t;
 
@@ -48,7 +48,8 @@ std::string run_conte_reductions(std::vector<std::vector<int>> &adj, std::vector
 
     CliquenessReduction cliqueness(&adj, config, &nodes_status);
     // cliqueness.reduce_old(config.minCliqueSize, config.kplexNum);
-    cliqueness.reduce(config.minCliqueSize, config.kplexNum, filename);
+    // cliqueness.reduce(config.minCliqueSize, config.kplexNum);
+    cliqueness.exhuastive_reduce(config.minCliqueSize, config.kplexNum);
     double cliqueness_time = t.elapsed();
     size_t cliqueness_kernel = count_remaining_nodes(nodes_status);
     t.restart();
@@ -58,7 +59,7 @@ std::string run_conte_reductions(std::vector<std::vector<int>> &adj, std::vector
     return output;
 }
 
-std::string run_reductions(std::vector<std::vector<int>> &adj, std::vector<bool> &nodes_status, Config &config, std::string &filename) {
+std::string run_reductions(std::vector<std::vector<int>> &adj, std::vector<bool> &nodes_status, Config &config) {
 
     timer t;
 
@@ -71,7 +72,8 @@ std::string run_reductions(std::vector<std::vector<int>> &adj, std::vector<bool>
 
     CliquenessReduction cliqueness(&adj, config, &nodes_status);
     // cliqueness.reduce_old(config.minCliqueSize, config.kplexNum);
-    cliqueness.reduce(config.minCliqueSize, config.kplexNum, filename);
+    // cliqueness.reduce(config.minCliqueSize, config.kplexNum);
+    cliqueness.exhuastive_reduce(config.minCliqueSize, config.kplexNum);
     double cliqueness_time = t.elapsed();
     size_t cliqueness_kernel = count_remaining_nodes(nodes_status);
     t.restart();
@@ -188,9 +190,9 @@ int main(int argn, char **argv) {
 
     timer t;
 
-    std::string result = run_reductions(adj, nodes_status, config, filename);
-    std::cout << header << result;;
-    write_G_prime(adj, nodes_status);
+    std::string result = run_reductions(adj, nodes_status, config);
+    std::cout << header << result << std::endl;
+    // write_G_prime(adj, nodes_status);
 
     return 0;
 }
@@ -213,7 +215,7 @@ int old_main(std::string &filename, Config &config, std::vector<std::vector<int>
         }
         if (config.CLQNESS) {
             CliquenessReduction cliqueness(&adj, config, &nodes_status);
-            cliqueness.reduce(config.minCliqueSize, config.kplexNum, filename);
+            cliqueness.reduce(config.minCliqueSize, config.kplexNum);
             // cliqueness.reduce(4);
             // p_nodes_status = &nodes_status;
         }

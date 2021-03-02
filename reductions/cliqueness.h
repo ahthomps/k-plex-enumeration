@@ -26,8 +26,8 @@ class CliquenessReduction {
         void get_maximum_cliques_quick_clqs(std::string &filename, std::function<void(std::vector<int>&)> callback);
         void get_maximum_cliques_bronkerbosh(std::function<bool(std::vector<std::vector<int>> const *, std::vector<int>, std::vector<int>, std::vector<int>)> callback);
 
-        bool reduce(double const clique_size, double const kplex, std::string &filename);
-        bool reduce(size_t const kplex);
+        bool exhuastive_reduce(double const clique_size, double const kplex);
+        bool reduce(double const clique_size, double const kplex);
         bool reduce_old(double const clique_size, double const kplex);
 
     private:

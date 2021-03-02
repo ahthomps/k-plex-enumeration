@@ -66,13 +66,6 @@ void CliquenessReduction::get_maximum_cliques_quick_clqs(std::string &filename, 
         callback(clq);
     }
 
-    // for (std::vector<int> line : maximal_cliques) {
-    //  for (int v : line) {
-    //      std::cout << v << " ";
-    //  }
-    //  std::cout << std::endl;u
-    // }
-
     std::remove("quick-cliques_output.txt");
 }
 
@@ -81,38 +74,28 @@ void CliquenessReduction::get_maximum_cliques_bronkerbosh(std::function<bool(std
     maxclq_algo.solve(_update_largest_clique_first);
 }
 
-bool CliquenessReduction::reduce(size_t const kplex) {
-    // BronKerbosch maxclq_algo(&_adj, _config, &_nodes_status);
-    // maxclq_algo.solve(_update_largest_clique);
-    // bool reduced = false;
 
-    // size_t min_clique_size = std::ceil(_max_clq_size / kplex);
-
-    // for (size_t i = 0; i < _max_clq.size(); i++) {
-    //     if (_max_clq[i] < min_clique_size) {
-    //         _nodes_status[i] = false;
-    //         reduced = true;
-    //     }
-    // }
-    return false;
-}
-
-bool CliquenessReduction::reduce(double const clique_size, double const kplex, std::string &filename) {
+bool CliquenessReduction::reduce(double const clique_size, double const kplex) {
     size_t min_clique_size = std::ceil(clique_size / kplex);
     bool reduced = false;
 
-    // BronKerbosch maxclq_algo(&_adj, _config, &_nodes_status);
-    // maxclq_algo.solve(_update_largest_clique);
-
-    // get_maximum_cliques_quick_clqs(filename, _update_largest_clique);
-    // std::cout << _max_clq_size << std::endl;
     integrated_quick_clqs();
 
     for (size_t i = 0; i < _max_clq.size(); i++) {
-        if (_max_clq[i] < min_clique_size) {
+        if (_nodes_status[i] && _max_clq[i] < min_clique_size) {
             _nodes_status[i] = false;
             reduced = true;
         }
+    }
+    return reduced;
+}
+
+bool CliquenessReduction::exhuastive_reduce(double const clique_size, double const kplex) {
+
+    bool reduced = true;
+    while (reduced) {
+        reduced = reduce(clique_size, kplex);
+        _max_clq.resize(_N, 1);
     }
     return reduced;
 }
