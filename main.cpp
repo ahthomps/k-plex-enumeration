@@ -192,7 +192,7 @@ int main(int argn, char **argv) {
 
     std::string result = run_reductions(adj, nodes_status, config);
     std::cout << header << result << std::endl;
-    // write_G_prime(adj, nodes_status);
+    write_G_prime(adj, nodes_status);
 
     return 0;
 }
