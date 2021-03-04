@@ -71,8 +71,8 @@ std::string run_reductions(std::vector<std::vector<int>> &adj, std::vector<bool>
 
     CliquenessReduction cliqueness(&adj, &nodes_status);
     // cliqueness.reduce_old(config.q, config.k);
-    // cliqueness.reduce(config.q, config.k);
-    cliqueness.exhuastive_reduce(config.q, config.k);
+    cliqueness.reduce(config.q, config.k);
+    // cliqueness.exhuastive_reduce(config.q, config.k);
     double cliqueness_time = t.elapsed();
     size_t cliqueness_kernel = count_remaining_nodes(nodes_status);
     t.restart();
