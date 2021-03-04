@@ -36,7 +36,7 @@ class TriangleReduction {
 
         size_t count_triangles_containing_edge(std::vector<std::unordered_map<int, bool>> const &edges_status, int const v, int const u);
         std::vector<std::unordered_map<int, size_t>> edge_count_triangles(std::vector<std::unordered_map<int, bool>> const &edges_status);
-        bool edge_reduce(std::vector<std::unordered_map<int, bool>> &edges_status, size_t const k, size_t const q);
+        size_t edge_reduce(std::vector<std::unordered_map<int, bool>> &edges_status, size_t const k, size_t const q);
 
     private:
         FastSet _used;

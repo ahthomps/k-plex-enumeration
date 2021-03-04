@@ -172,11 +172,11 @@ std::string run_edge_based_reductions(std::vector<std::vector<int>> &adj, std::v
     timer t;
 
     TriangleReduction triangle(adj, nodes_status);
-    triangle.edge_reduce(edges_status, config.k, config.q);
+    size_t triangle_edges_reduced = triangle.edge_reduce(edges_status, config.k, config.q);
     double triangle_time = t.elapsed();
     size_t triangle_kernel = count_remaining_nodes(nodes_status);
 
-    std::string output = std::to_string(triangle_kernel) + " " + std::to_string(triangle_time) + " ";
+    std::string output = std::to_string(triangle_edges_reduced) + " " + std::to_string(triangle_kernel) + " " + std::to_string(triangle_time) + " ";
 
     return output;
 }
