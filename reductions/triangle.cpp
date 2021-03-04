@@ -249,8 +249,11 @@ size_t TriangleReduction::edge_reduce(std::vector<std::unordered_map<int, bool>>
 
     size_t min_triangles = q - (2 * k);
     size_t num_edges_reduced = 0;
+
     for (int v = 0; v < (int) _N - 1; v++) {
+        if (!_nodes_status[v]) continue;
         for (int w = v + 1; w < (int) _N; w++) {
+            if (!_nodes_status[w]) continue;
             if (edges_status[v].find(w) != edges_status[v].end() && edges_status[v].at(w) && edge_triangles[v][w] < min_triangles) {
                 edges_status[v].at(w) = false;
                 edges_status[w].at(v) = false;
@@ -261,6 +264,7 @@ size_t TriangleReduction::edge_reduce(std::vector<std::unordered_map<int, bool>>
     }
 
     for (size_t v = 0; v < _N; v++) {
+        if (!_nodes_status[v]) continue;
         bool v_is_valid = false;
         for (int u : _adj[v])
             if (edges_status[v].at(u)) {
