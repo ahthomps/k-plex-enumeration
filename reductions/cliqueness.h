@@ -4,7 +4,6 @@
 #include <list>
 
 #include "../bronKerbosch/bronKerbosch.h"
-#include "../tools/config.h"
 
 
 #ifndef CLIQUENESS_H_
@@ -13,13 +12,12 @@
 class CliquenessReduction {
     public:
         std::vector<std::vector<int>>& _adj;
-        Config& _config;
         std::vector<bool>& _nodes_status;
         size_t _N;
         std::vector<size_t> _max_clq;
         size_t _max_clq_size = 0; 
 
-        CliquenessReduction(std::vector<std::vector<int>> *adj, Config &config, std::vector<bool> *nodes_status);
+        CliquenessReduction(std::vector<std::vector<int>> *adj, std::vector<bool> *nodes_status);
         ~CliquenessReduction() {}; 
 
         void integrated_quick_clqs();

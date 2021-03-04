@@ -3,6 +3,7 @@
 #include <iterator>
 #include <list>
 #include <tuple>
+#include <unordered_map>
 
 #include "../tools/graph_tools.h"
 
@@ -10,6 +11,7 @@
 #define TRIANGLE_H_
 
 class TriangleReduction {
+
     public:
         std::vector<std::vector<int>>& _adj;
         std::vector<bool>& _nodes_status;
@@ -32,6 +34,9 @@ class TriangleReduction {
 
         bool reduce(size_t const k, size_t const m);
 
+        size_t count_triangles_containing_edge(std::vector<std::unordered_map<int, bool>> const &edges_status, int const v, int const u);
+        std::vector<std::unordered_map<int, size_t>> edge_count_triangles(std::vector<std::unordered_map<int, bool>> const &edges_status);
+        bool edge_reduce(std::vector<std::unordered_map<int, bool>> &edges_status, size_t const k, size_t const q);
 
     private:
         FastSet _used;

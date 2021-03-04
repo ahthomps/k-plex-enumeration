@@ -4,15 +4,14 @@
 
 #include "bronKerbosch.h"
 #include "../tools/fast_set.h"
-#include "../tools/config.h"
 
-BronKerbosch::BronKerbosch(std::vector<std::vector<int>> const *adj, Config &config, std::vector<bool> const *nodes_status, size_t min_size) :
+BronKerbosch::BronKerbosch(std::vector<std::vector<int>> const *adj, std::vector<bool> const *nodes_status, size_t min_size) :
   _adj(*adj), _nodes_status(*nodes_status), _min_size(min_size)
 {
   _N = _adj.size();
   _used.set_fast_set(_N);
 
-  _report_clique = config.RPT_CLQ;
+  // _report_clique = config.RPT_CLQ;
 }
 
 size_t BronKerbosch::get_clique_counter() {

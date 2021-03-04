@@ -3,7 +3,6 @@
 #include <functional>
 
 #include "../tools/fast_set.h"
-#include "../tools/config.h"
 
 #ifndef BRONKERBOSCH_H_
 #define BRONKERBOSCH_H_
@@ -16,7 +15,7 @@ class BronKerbosch {
     bool _find_level_sets = false;
     size_t _clique_counter = 0;
 
-    BronKerbosch(std::vector<std::vector<int>> const *adj, Config &config, std::vector<bool> const *nodes_status, size_t min_size=1);
+    BronKerbosch(std::vector<std::vector<int>> const *adj, std::vector<bool> const *nodes_status, size_t min_size=1);
 
     size_t get_clique_counter();
 

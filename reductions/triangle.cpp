@@ -196,6 +196,84 @@ bool TriangleReduction::reduce(size_t const k, size_t const m) {
     return reduced;
 } 
 
+//==================================================================================================//
+
+
+size_t TriangleReduction::count_triangles_containing_edge(std::vector<std::unordered_map<int, bool>> const &edges_status, int const v, int const u) {
+    _used.clear();
+    for (int w : _adj[v]) {
+        if (edges_status[v].at(u))
+             _used.add(u);
+    }
+
+    size_t common_neighborhood_size = 0;
+    for (int w : _adj[u]) {
+        if (edges_status[u].at(w) && _used.get(w))
+            common_neighborhood_size += 1;
+    }
+
+    return common_neighborhood_size;
+}
+
+
+std::vector<std::unordered_map<int, size_t>> TriangleReduction::edge_count_triangles(std::vector<std::unordered_map<int, bool>> const &edges_status) {
+    std::vector<std::unordered_map<int, size_t>> edge_triangles(_N);
+
+    for (int v = 0; v < (int) _N - 1; v++) {
+        _used.clear();
+        for (int u : _adj[v]) {
+            if (edges_status[v].at(u))
+                _used.add(u);
+        }
+
+        for (int w = v + 1; w < (int) _N; w++) {
+            edge_triangles[v][w] = 0;
+            if (edges_status[w].find(w) == edges_status[w].end() || !edges_status[v].at(w)) continue;
+        
+            size_t common_neighborhood_size = 0;
+            for (int u : _adj[w]) {
+                if (edges_status[w].at(u) && _used.get(u))
+                    common_neighborhood_size += 1;
+            }
+            edge_triangles[v][w] = common_neighborhood_size;
+
+        }
+    }
+
+    return edge_triangles;
+}
+
+bool TriangleReduction::edge_reduce(std::vector<std::unordered_map<int, bool>> &edges_status, size_t const k, size_t const q) {
+    bool reduced = false;
+    std::vector<std::unordered_map<int, size_t>> edge_triangles = edge_count_triangles(edges_status);
+
+    size_t min_triangles = q - (2 * k);
+    size_t num_reduced = 0;
+
+    for (int v = 0; v < (int) _N - 1; v++) {
+        for (int w = v + 1; w < (int) _N; w++) {
+            if (edges_status[w].find(w) != edges_status[w].end() && edges_status[v].at(w) && edge_triangles[v][w] < min_triangles) {
+                edges_status[v].at(w) = false;
+                edges_status[w].at(v) = false;
+                num_reduced += 1;
+                reduced = true;
+            }
+        }
+    }
+
+    for (size_t v = 0; v < _N; v++) {
+        bool v_is_valid = false;
+        for (int u : _adj[v])
+            if (edges_status[v].at(u)) {
+                v_is_valid = true;
+                break;
+            }
+        _nodes_status[v] = v_is_valid;
+    }
+
+    return reduced;
+}
+
 
 
 

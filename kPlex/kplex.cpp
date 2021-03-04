@@ -16,7 +16,7 @@ KPlex::KPlex(std::vector<std::vector<int>> const *adj, Config &config, std::vect
     _enumerate_connected_k_plex = config.CONNECTED;
     _report_clique = config.RPT_CLQ;
 
-    _maximal_clique_algo = new BronKerbosch(&_adj, config, nodes_status, min_size);
+    _maximal_clique_algo = new BronKerbosch(&_adj, nodes_status, min_size);
 }
 
 KPlex::~KPlex() {

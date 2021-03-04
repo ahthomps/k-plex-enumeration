@@ -15,8 +15,8 @@
 #include "../quick-cliques/Algorithm.h"
 #include "../quick-cliques/DegeneracyAlgorithm.h"
 
-CliquenessReduction::CliquenessReduction(std::vector<std::vector<int>> *adj, Config &config, std::vector<bool> *nodes_status) :
-    _adj(*adj), _config(config), _nodes_status(*nodes_status)
+CliquenessReduction::CliquenessReduction(std::vector<std::vector<int>> *adj, std::vector<bool> *nodes_status) :
+    _adj(*adj), _nodes_status(*nodes_status)
 {
     _N = _adj.size();
     _max_clq.resize(_N, 1);
@@ -35,6 +35,7 @@ void CliquenessReduction::integrated_quick_clqs() {
 
     std::list<std::list<int>> cliques;
     pAlgorithm->Run(cliques, _nodes_status);
+    delete pAlgorithm;
 }
 
 void CliquenessReduction::get_maximum_cliques_quick_clqs(std::string &filename, std::function<void(std::vector<int>&)> callback) {
@@ -70,7 +71,7 @@ void CliquenessReduction::get_maximum_cliques_quick_clqs(std::string &filename, 
 }
 
 void CliquenessReduction::get_maximum_cliques_bronkerbosh(std::function<bool(std::vector<std::vector<int>> const *, std::vector<int>, std::vector<int>, std::vector<int>)> callback) {
-    BronKerbosch maxclq_algo(&_adj, _config, &_nodes_status);
+    BronKerbosch maxclq_algo(&_adj, &_nodes_status);
     maxclq_algo.solve(_update_largest_clique_first);
 }
 

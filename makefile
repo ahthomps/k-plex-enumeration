@@ -4,11 +4,8 @@ CFLAGS = -std=c++11 -O3
 
 all: main
 
-main: optimized/graph_io.o optimized/bronKerbosch.o optimized/kplex.o optimized/kplex.o optimized/coreness.o optimized/MemoryManager.o optimized/Algorithm.o optimized/Tools.o optimized/DegeneracyTools.o optimized/DegeneracyAlgorithm.o optimized/cliqueness.o optimized/triangle.o optimized/four_cliques.o tools/config.h main.cpp
-	g++ optimized/graph_io.o optimized/bronKerbosch.o optimized/kplex.o optimized/coreness.o optimized/MemoryManager.o optimized/Algorithm.o optimized/Tools.o optimized/DegeneracyTools.o optimized/DegeneracyAlgorithm.o optimized/cliqueness.o optimized/triangle.o optimized/four_cliques.o  main.cpp $(CFLAGS) -o main
-
-optimized/kplex.o: optimized/bronKerbosch.o tools/graph_tools.h kPlex/kplex.h kPlex/kplex.cpp
-	g++ kPlex/kplex.cpp -c $(CFLAGS) -o optimized/kplex.o
+main: optimized/graph_io.o optimized/bronKerbosch.o optimized/coreness.o optimized/MemoryManager.o optimized/Algorithm.o optimized/Tools.o optimized/DegeneracyTools.o optimized/DegeneracyAlgorithm.o optimized/cliqueness.o optimized/triangle.o optimized/four_cliques.o tools/config.h main.cpp
+	g++ optimized/graph_io.o optimized/bronKerbosch.o optimized/coreness.o optimized/MemoryManager.o optimized/Algorithm.o optimized/Tools.o optimized/DegeneracyTools.o optimized/DegeneracyAlgorithm.o optimized/cliqueness.o optimized/triangle.o optimized/four_cliques.o  main.cpp $(CFLAGS) -o main
 
 optimized/bronKerbosch.o: bronKerbosch/bronKerbosch.cpp bronKerbosch/bronKerbosch.h
 	g++ bronKerbosch/bronKerbosch.cpp -c $(CFLAGS) -o optimized/bronKerbosch.o
@@ -23,7 +20,7 @@ optimized/cliqueness.o: reductions/cliqueness.cpp reductions/cliqueness.h
 	g++ reductions/cliqueness.cpp -c $(CFLAGS) -o optimized/cliqueness.o
 
 optimized/triangle.o: reductions/triangle.cpp reductions/triangle.h
-	g++ reductions/triangle.cpp -c $(CFLAGS) -o optimized/triangle.o
+	g++ reductions/triangle.cpp -c $(CFLAGS) -o optimized/triangle.o 
 
 optimized/four_cliques.o: reductions/four_cliques.cpp reductions/four_cliques.h
 	g++ reductions/four_cliques.cpp -c $(CFLAGS) -o optimized/four_cliques.o

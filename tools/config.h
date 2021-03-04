@@ -7,127 +7,37 @@
 
 class Config {
 
-  public:
+    public:
 
-    bool MAX_CLQ = false;
-    bool TWOPLX = false;
-    bool RPT_CLQ = false;
-    bool ONE_NR_CLQ = false;
-    bool CONN_ONE_NR_CLQ = false;
-    bool TWO_NR_CLQ = false;
-    bool TEST = false;
-    bool WRT_3PLX = false;
-    bool THREEPLX = false;
-    bool CONN_TWO_NR_CLQ = false;
-    bool CONNECTED = false;
-    bool CLQNESS = false;
-    bool CORNESS = false;
-    bool PRINT_NODES_STATUS = false;
-
-    size_t kplexNum = 1;
-    size_t minCliqueSize = 1;
+    size_t k = 1;     // k-plex number
+    size_t q = 1;     // minimum kplex size
 
     Config(int argn, char **argv) {
-      if (argn == 2) {
-        TWOPLX = true;
-        CONN_ONE_NR_CLQ = true;
-      }
-      else {
 
-        std::string max_clq = "--MAXCLQ";
-        std::string twoplx = "--2PLX";
-        std::string conn_twoplx = "--CONN2PLX";
-        std::string rpt_clq = "--RPTCLQ";
-        std::string one_nr_clq = "--1NRCLQ";
-        std::string conn_one_nr_clq = "--CONN1NRCLQ";
-        std::string two_nr_clq = "--2NRCLQ";
-        std::string test_ = "--TEST";
-        std::string wrt_three_plex = "--WRT3PLX";
-        std::string three_plex = "--3PLX";
-        std::string conn_two_nr_clq = "--CONN2NRCLQ";
-        std::string conn_threeplx = "--CONN3PLX";
-        std::string cliqueness = "--CLQNESS";
-        std::string coreness = "--CORNESS";
-        std::string reduce = "--RDCE";
-        std::string print_nodes_status = "--NDSTATS";
-        std::string min_clique_size = "--MINCLQSIZE=";
+        std::string set_q = "--q=";
         std::string set_k = "--k=";
 
         for (int i = 1; i < argn; i++) {
             std::string argv_i = argv[i];
 
-            if (argv_i.find('=') != std::string::npos) {
-				std::string first_part;
-				for (size_t i = 0; i <= argv_i.find('='); i++) {
-					first_part.push_back(argv_i[i]);
-				}
-				std::string second_part;
-				for (size_t i = argv_i.find('=') + 1; i < argv_i.size(); i++) {
-					second_part.push_back(argv_i[i]);
-				}
-				std::istringstream iss(second_part);
-				size_t value;
-				iss >> value;
-				if (!first_part.compare(min_clique_size)) {
-					minCliqueSize = value;
-        }
-        else if (!first_part.compare(set_k)) kplexNum = value;
+        if (argv_i.find('=') != std::string::npos) {
+			       std::string first_part;
+			for (size_t i = 0; i <= argv_i.find('='); i++) {
+				first_part.push_back(argv_i[i]);
 			}
-          else if (argv[i] == max_clq) MAX_CLQ = true;
-          else if (argv[i] == twoplx) {
-              TWOPLX = true;
-              kplexNum = 2;
-          }
-          else if (argv[i] == conn_twoplx) {
-            TWOPLX = true;
-            CONNECTED = true;
-            kplexNum = 2;
-          }
-          else if (argv[i] == conn_threeplx) {
-              THREEPLX = true;
-              CONNECTED = true;
-              kplexNum = 3;
-          }
-          else if (argv[i] == rpt_clq) RPT_CLQ = true;
-          else if (argv[i] == one_nr_clq) ONE_NR_CLQ = true;
-          else if (argv[i] == conn_one_nr_clq) {
-            ONE_NR_CLQ = true;
-            CONN_ONE_NR_CLQ = true;
-          }
-          else if (argv[i] == two_nr_clq) TWO_NR_CLQ = true;
-          else if (argv[i] == test_) {
-              TEST = true;
-              RPT_CLQ = true;
-          }
-          else if (argv[i] == wrt_three_plex) {
-              WRT_3PLX = true;
-          }
-          else if (argv[i] == three_plex) {
-              THREEPLX = true;
-              kplexNum = 3;
-          }
-          else if (argv[i] == conn_two_nr_clq) {
-              CONN_TWO_NR_CLQ = true;
-          }
-          else if (argv[i] == cliqueness) {
-              CLQNESS = true;
-          }
-          else if (argv[i] == coreness) {
-              CORNESS = true;
-          }
-          else if (argv[i] == reduce) {
-              CLQNESS = true;
-              CORNESS = true;
-          }
-          else if (argv[i] == print_nodes_status) {
-              PRINT_NODES_STATUS = true;
-          }
-        }
-      }
-    }
-
-    void set_RPT_CLQ(bool new_RPT_CLQ) {
-        RPT_CLQ = new_RPT_CLQ;
+			std::string second_part;
+			for (size_t i = argv_i.find('=') + 1; i < argv_i.size(); i++) {
+				second_part.push_back(argv_i[i]);
+			}
+			std::istringstream iss(second_part);
+			size_t value;
+			iss >> value;
+			if (!first_part.compare(set_q)) {
+				q = value;
+            }
+            else if (!first_part.compare(set_k)) k = value;
+		}
+      } 
     }
 };
 
