@@ -220,15 +220,16 @@ std::vector<std::unordered_map<int, size_t>> TriangleReduction::edge_count_trian
     std::vector<std::unordered_map<int, size_t>> edge_triangles(_N);
 
     for (int v = 0; v < (int) _N - 1; v++) {
-        _used.clear();
+        if (!_nodes_status[v]) continue;
+         _used.clear();
         for (int u : _adj[v]) {
             if (edges_status[v].at(u))
                 _used.add(u);
         }
 
-        for (int w = v + 1; w < (int) _N; w++) {
+        for (int w : _adj[v]) {
             edge_triangles[v][w] = 0;
-            if (edges_status[v].find(w) == edges_status[v].end() || !edges_status[v].at(w)) continue;
+            if (!_nodes_status[w] || !edges_status[v].at(w)) continue;
         
             size_t common_neighborhood_size = 0;
             for (int u : _adj[w]) {
@@ -252,9 +253,8 @@ size_t TriangleReduction::edge_reduce(std::vector<std::unordered_map<int, bool>>
 
     for (int v = 0; v < (int) _N - 1; v++) {
         if (!_nodes_status[v]) continue;
-        for (int w = v + 1; w < (int) _N; w++) {
-            if (!_nodes_status[w]) continue;
-            if (edges_status[v].find(w) != edges_status[v].end() && edges_status[v].at(w) && edge_triangles[v][w] < min_triangles) {
+        for (int w : _adj[v]) {
+            if (edges_status[v].at(w) && edge_triangles[v][w] < min_triangles) {
                 edges_status[v].at(w) = false;
                 edges_status[w].at(v) = false;
                 num_edges_reduced += 1;
