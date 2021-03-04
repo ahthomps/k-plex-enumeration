@@ -27,6 +27,9 @@ class FourCliquesReduction {
 
         bool reduce(size_t const k, size_t const m);
 
+        std::vector<std::unordered_map<int, size_t>> edge_count_4clqs(std::vector<std::unordered_map<int, bool>> const &edges_status);
+        size_t edge_reduce(std::vector<std::unordered_map<int, bool>> &edges_status, double const k, double const q);
+
 
     private:
         FastSet _used;

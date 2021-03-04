@@ -49,6 +49,8 @@ class TriangleReduction {
 
         bool reduction_helper(size_t min_triangles, FastSet &needs_updating);
 
+        size_t edge_reduce_helper(std::vector<std::unordered_map<int, bool>> &edges_status, size_t const min_triangles);
+
         // void get_degeneracy_ordering(std::vector<int> &nodes_list,
         //                              std::vector<size_t> &degeneracy_ordering,
         //                              std::vector<int> &nodeID_to_degeneracy_mapping,

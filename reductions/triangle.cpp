@@ -244,12 +244,11 @@ std::vector<std::unordered_map<int, size_t>> TriangleReduction::edge_count_trian
     return edge_triangles;
 }
 
-size_t TriangleReduction::edge_reduce(std::vector<std::unordered_map<int, bool>> &edges_status, size_t const k, size_t const q) {
-    bool reduced = false;
-    std::vector<std::unordered_map<int, size_t>> edge_triangles = edge_count_triangles(edges_status);
 
-    size_t min_triangles = q - (2 * k);
+size_t TriangleReduction::edge_reduce_helper(std::vector<std::unordered_map<int, bool>> &edges_status, size_t const min_triangles) {
     size_t num_edges_reduced = 0;
+
+    std::vector<std::unordered_map<int, size_t>> edge_triangles = edge_count_triangles(edges_status);
 
     for (int v = 0; v < (int) _N - 1; v++) {
         if (!_nodes_status[v]) continue;
@@ -258,10 +257,25 @@ size_t TriangleReduction::edge_reduce(std::vector<std::unordered_map<int, bool>>
                 edges_status[v].at(w) = false;
                 edges_status[w].at(v) = false;
                 num_edges_reduced += 1;
-                reduced = true;
             }
         }
     }
+
+    return num_edges_reduced;
+}
+
+size_t TriangleReduction::edge_reduce(std::vector<std::unordered_map<int, bool>> &edges_status, size_t const k, size_t const q) {
+    bool reduced = false;
+    size_t num_edges_reduced = 0;
+    size_t current_num_edges_reduced = 0;
+
+    size_t min_triangles = q - (2 * k);
+
+    do {
+        current_num_edges_reduced = edge_reduce_helper(edges_status, min_triangles);
+        num_edges_reduced += current_num_edges_reduced;
+    }
+    while (current_num_edges_reduced != 0);
 
     for (size_t v = 0; v < _N; v++) {
         if (!_nodes_status[v]) continue;

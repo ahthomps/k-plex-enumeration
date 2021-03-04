@@ -40,42 +40,6 @@ void FourCliquesReduction::bruteforce_count_4clqs() {
     		_four_cliques->at(v) = count_four_cliques_containing_vertex(v, used_too);
     }
     return;
-    // std::unordered_map<std::string, bool> mapping;
-    // for (int v = 0; v < (int) _N; v++) {
-    //     for (int u : _adj[v]) {
-    //         if (v < u) {
-    //             std::string edge = std::to_string(v) + " " + std::to_string(u);
-    //             mapping[edge] = true;
-    //         }
-    //     }
-    // }
-    // for (size_t v = 0; v < _N - 3; v++) {
-    //     for (size_t w = v + 1; w < _N - 2; w++) {
-    //         for (size_t u = w + 1; u < _N - 1; u++){
-    //             for (size_t x = u + 1; x < _N; x++) {
-    //                 std::string vs = std::to_string(v);
-    //                 std::string ws = std::to_string(w);
-    //                 std::string us = std::to_string(u);
-    //                 std::string xs = std::to_string(x);
-    //                 std::vector<std::string> edges = {vs + " " + ws, vs + " " + us, vs + " " + xs, ws + " " + us, 
-    //                                                   ws + " " + xs, us + " " + xs};
-    //                 bool is_tri = true;
-    //                 for (std::string edge : edges) {
-    //                     if (mapping.find(edge) == mapping.end()) {
-    //                         is_tri = false;
-    //                         break;
-    //                     }
-    //                 }
-    //                 if (is_tri) {
-    //                     _four_cliques->at(u)++;
-    //                     _four_cliques->at(v)++;
-    //                     _four_cliques->at(w)++;
-    //                     _four_cliques->at(x)++;
-    //                 }
-    //             }
-    //         }
-    //     }
-    // }
 }
 
 void FourCliquesReduction::count_4clqs() {
@@ -202,6 +166,78 @@ bool FourCliquesReduction::reduce(size_t const k, size_t const m) {
 
     return reduced;
 } 
+
+//==================================================================================================//
+
+std::vector<std::unordered_map<int, size_t>> FourCliquesReduction::edge_count_4clqs(std::vector<std::unordered_map<int, bool>> const &edges_status) {
+    std::vector<std::unordered_map<int, size_t>> edge_4clqs(_N);
+
+    for (int v = 0; v < (int) _N - 1; v++) {
+        if (!_nodes_status[v]) continue;
+        _used.clear();
+        for (int u : _adj[v]) {
+            if (edges_status[v].at(u))
+                _used.add(u);
+        }
+
+        for (int w : _adj[v]) {
+            edge_4clqs[v][w] = 0;
+            if (!edges_status[v].at(w)) continue;
+
+            std::vector<int> common_neighborhood;
+            common_neighborhood.reserve(_adj[w].size());
+            for (int u : _adj[w]) {
+                if (edges_status[w].at(u) && _used.get(u))
+                    common_neighborhood.push_back(u);
+            } 
+
+            for (size_t i = 0; i < common_neighborhood.size() - 1; i++) {
+                int u = common_neighborhood[i];
+                for (size_t j = i + 1; j < common_neighborhood.size(); j++) {
+                    int x = common_neighborhood[j];
+                    if (edges_status[u].find(x) != edges_status[u].end() && edges_status[u].at(x)) 
+                        edge_4clqs[v].at(w) += 1;
+                }  
+            }
+        }
+    }
+
+    return edge_4clqs;
+}
+
+size_t FourCliquesReduction::edge_reduce(std::vector<std::unordered_map<int, bool>> &edges_status, double const k, double const q) {
+    bool reduced = false;
+    std::vector<std::unordered_map<int, size_t>> edge_4clqs = edge_count_4clqs(edges_status);
+
+    size_t min_four_cliques = ceil((q - 2 * k) * (q - 3 * k) / 2);
+    size_t num_edges_reduced = 0;
+
+    for (int v = 0; v < (int) _N - 1; v++) {
+        if (!_nodes_status[v]) continue;
+        for (int w : _adj[v]) {
+            if (edges_status[v].at(w) && edge_4clqs[v][w] < min_four_cliques) {
+                edges_status[v].at(w) = false;
+                edges_status[w].at(v) = false;
+                num_edges_reduced += 1;
+                reduced = true;
+            }
+        }
+    }
+
+    for (size_t v = 0; v < _N; v++) {
+        if (!_nodes_status[v]) continue;
+        bool v_is_valid = false;
+        for (int u : _adj[v])
+            if (edges_status[v].at(u)) {
+                v_is_valid = true;
+                break;
+            }
+        _nodes_status[v] = v_is_valid;
+    }
+
+    return num_edges_reduced;
+}
+
 
 
 

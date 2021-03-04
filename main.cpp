@@ -176,7 +176,13 @@ std::string run_edge_based_reductions(std::vector<std::vector<int>> &adj, std::v
     double triangle_time = t.elapsed();
     size_t triangle_kernel = count_remaining_nodes(nodes_status);
 
-    std::string output = std::to_string(triangle_edges_reduced) + " " + std::to_string(triangle_kernel) + " " + std::to_string(triangle_time) + " ";
+    FourCliquesReduction fourcliques(adj, nodes_status);
+    size_t fourcliques_edges_reduced = fourcliques.edge_reduce(edges_status, config.k, config.q);
+    double fourcliques_time = t.elapsed();
+    size_t fourcliques_kernel = count_remaining_nodes(nodes_status);
+
+    std::string output = (std::to_string(triangle_edges_reduced) + " " + std::to_string(triangle_kernel) + " " + std::to_string(triangle_time) + " " +
+                          std::to_string(fourcliques_edges_reduced) + " " + std::to_string(fourcliques_kernel) + " " + std::to_string(fourcliques_time) + " ");
 
     return output;
 }
