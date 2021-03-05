@@ -191,6 +191,8 @@ std::vector<std::unordered_map<int, size_t>> FourCliquesReduction::edge_count_4c
                     common_neighborhood.push_back(u);
             } 
 
+            if (common_neighborhood.size() < 2) continue;
+
             for (size_t i = 0; i < common_neighborhood.size() - 1; i++) {
                 int u = common_neighborhood[i];
                 for (size_t j = i + 1; j < common_neighborhood.size(); j++) {
@@ -207,9 +209,7 @@ std::vector<std::unordered_map<int, size_t>> FourCliquesReduction::edge_count_4c
 
 size_t FourCliquesReduction::edge_reduce_helper(std::vector<std::unordered_map<int, bool>> &edges_status, double const min_four_cliques) {
     bool reduced = false;
-    std::cout << "stuck here? " << std::endl;
     std::vector<std::unordered_map<int, size_t>> edge_4clqs = edge_count_4clqs(edges_status);
-    std::cout << "no" << std::endl;
 
     size_t num_edges_reduced = 0;
 
