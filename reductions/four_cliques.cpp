@@ -238,11 +238,8 @@ size_t FourCliquesReduction::edge_reduce(std::vector<std::unordered_map<int, boo
     do {
         current_num_edges_reduced = edge_reduce_helper(edges_status, min_four_cliques);
         num_edges_reduced += current_num_edges_reduced;
-        std::cout << current_num_edges_reduced << std::endl;
     }
     while (current_num_edges_reduced != 0);
-
-    std::cout << "done" << std::endl;
 
     for (size_t v = 0; v < _N; v++) {
         if (!_nodes_status[v]) continue;
