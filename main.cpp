@@ -156,14 +156,14 @@ std::string run_4clq_reduction(std::vector<std::vector<int>> &adj, std::vector<b
 
 std::string run_edge_based_reductions(std::vector<std::vector<int>> &adj, std::vector<bool> &nodes_status, Config &config) {
 
-    std::vector<std::unordered_map<int, bool>> edges_status(adj.size());
+    std::unordered_map<std::pair<int, int>, bool, pair_hash> edges_status;
     for (int v = 0; v < (int) adj.size(); v++)
         for (int w : adj[v]) {
             if (nodes_status[v] && nodes_status[w]) {
-                edges_status[v][w] = true;
+                edges_status[{v, w}] = true;
             }
             else {
-                edges_status[v][w] = false;
+                edges_status[{v, w}] = false;
             }
         }
 

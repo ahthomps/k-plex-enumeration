@@ -199,17 +199,17 @@ bool TriangleReduction::reduce(size_t const k, size_t const m) {
 //==================================================================================================//
 
 
-size_t TriangleReduction::count_triangles_containing_edge(std::vector<std::unordered_map<int, bool>> const &edges_status, int const v, int const u) {
+size_t TriangleReduction::count_triangles_containing_edge(std::unordered_map<std::pair<int, int>, bool, pair_hash> const &edges_status, int const v, int const u) {
     FastSet used;
     used.set_fast_set(_N);
     for (int w : _adj[v]) {
-        if (edges_status[v].at(w))
+        if (edges_status.at({v, w}))
              used.add(w);
     }
 
     size_t common_neighborhood_size = 0;
     for (int w : _adj[u]) {
-        if (edges_status[u].at(w) && used.get(w))
+        if (edges_status.at({u, w}) && used.get(w))
             common_neighborhood_size += 1;
     }
 
@@ -217,24 +217,24 @@ size_t TriangleReduction::count_triangles_containing_edge(std::vector<std::unord
 }
 
 
-std::vector<std::unordered_map<int, size_t>> TriangleReduction::edge_count_triangles(std::vector<std::unordered_map<int, bool>> const &edges_status) {
+std::vector<std::unordered_map<int, size_t>> TriangleReduction::edge_count_triangles(std::unordered_map<std::pair<int, int>, bool, pair_hash> const &edges_status) {
     std::vector<std::unordered_map<int, size_t>> edge_triangles(_N);
 
     for (int v = 0; v < (int) _N - 1; v++) {
         if (!_nodes_status[v]) continue;
          _used.clear();
         for (int u : _adj[v]) {
-            if (edges_status[v].at(u))
+            if (edges_status.at({v, u}))
                 _used.add(u);
         }
 
         for (int w : _adj[v]) {
             edge_triangles[v][w] = 0;
-            if (!_nodes_status[w] || !edges_status[v].at(w)) continue;
+            if (!_nodes_status[w] || !edges_status.at({v, w})) continue;
         
             size_t common_neighborhood_size = 0;
             for (int u : _adj[w]) {
-                if (edges_status[w].at(u) && _used.get(u))
+                if (edges_status.at({w, u}) && _used.get(u))
                     common_neighborhood_size += 1;
             }
             edge_triangles[v][w] = common_neighborhood_size;
@@ -245,7 +245,7 @@ std::vector<std::unordered_map<int, size_t>> TriangleReduction::edge_count_trian
 }
 
 
-size_t TriangleReduction::edge_reduce_helper(std::vector<std::unordered_map<int, bool>> &edges_status, size_t const min_triangles) {
+size_t TriangleReduction::edge_reduce_helper(std::unordered_map<std::pair<int, int>, bool, pair_hash> &edges_status, size_t const min_triangles) {
     size_t num_edges_reduced = 0;
 
     std::vector<std::unordered_map<int, size_t>> edge_triangles = edge_count_triangles(edges_status);
@@ -253,9 +253,9 @@ size_t TriangleReduction::edge_reduce_helper(std::vector<std::unordered_map<int,
     for (int v = 0; v < (int) _N - 1; v++) {
         if (!_nodes_status[v]) continue;
         for (int w : _adj[v]) {
-            if (edges_status[v].at(w) && edge_triangles[v][w] < min_triangles) {
-                edges_status[v].at(w) = false;
-                edges_status[w].at(v) = false;
+            if (edges_status.at({v, w}) && edge_triangles[v][w] < min_triangles) {
+                edges_status.at({v, w}) = false;
+                edges_status.at({w, v}) = false;
                 num_edges_reduced += 1;
             }
         }
@@ -264,7 +264,7 @@ size_t TriangleReduction::edge_reduce_helper(std::vector<std::unordered_map<int,
     return num_edges_reduced;
 }
 
-size_t TriangleReduction::edge_reduce(std::vector<std::unordered_map<int, bool>> &edges_status, size_t const k, size_t const q) {
+size_t TriangleReduction::edge_reduce(std::unordered_map<std::pair<int, int>, bool, pair_hash> &edges_status, size_t const k, size_t const q) {
     bool reduced = false;
     size_t num_edges_reduced = 0;
     size_t current_num_edges_reduced = 0;
@@ -281,7 +281,7 @@ size_t TriangleReduction::edge_reduce(std::vector<std::unordered_map<int, bool>>
         if (!_nodes_status[v]) continue;
         size_t deg = 0;
         for (int u : _adj[v])
-            if (edges_status[v].at(u)) {
+            if (edges_status.at({v, u})) {
                 deg += 1;
             }
         // if (deg == 0)

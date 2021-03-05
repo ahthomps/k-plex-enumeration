@@ -27,8 +27,8 @@ class FourCliquesReduction {
 
         bool reduce(size_t const k, size_t const m);
 
-        std::vector<std::unordered_map<int, size_t>> edge_count_4clqs(std::vector<std::unordered_map<int, bool>> const &edges_status);
-        size_t edge_reduce(std::vector<std::unordered_map<int, bool>> &edges_status, double const k, double const q);
+        std::vector<std::unordered_map<int, size_t>> edge_count_4clqs(std::unordered_map<std::pair<int, int>, bool, pair_hash> const &edges_status);
+        size_t edge_reduce(std::unordered_map<std::pair<int, int>, bool, pair_hash> &edges_status, double const k, double const q);
 
 
     private:
@@ -40,7 +40,7 @@ class FourCliquesReduction {
         size_t count_four_cliques_containing_vertex(int v, FastSet &used_too);
 
         bool reduction_helper(size_t min_four_cliques, FastSet &need_updating);
-        size_t edge_reduce_helper(std::vector<std::unordered_map<int, bool>> &edges_status, double const min_four_cliques);
+        size_t edge_reduce_helper(std::unordered_map<std::pair<int, int>, bool, pair_hash> &edges_status, double const min_four_cliques);
 };
 
 #endif

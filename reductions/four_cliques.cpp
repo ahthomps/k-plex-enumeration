@@ -169,25 +169,25 @@ bool FourCliquesReduction::reduce(size_t const k, size_t const m) {
 
 //==================================================================================================//
 
-std::vector<std::unordered_map<int, size_t>> FourCliquesReduction::edge_count_4clqs(std::vector<std::unordered_map<int, bool>> const &edges_status) {
+std::vector<std::unordered_map<int, size_t>> FourCliquesReduction::edge_count_4clqs(std::unordered_map<std::pair<int, int>, bool, pair_hash> const &edges_status) {
     std::vector<std::unordered_map<int, size_t>> edge_4clqs(_N);
 
     for (int v = 0; v < (int) _N - 1; v++) {
         if (!_nodes_status[v]) continue;
         _used.clear();
         for (int u : _adj[v]) {
-            if (edges_status[v].at(u))
+            if (edges_status.at({v, u}))
                 _used.add(u);
         }
 
         for (int w : _adj[v]) {
             edge_4clqs[v][w] = 0;
-            if (!edges_status[v].at(w)) continue;
+            if (!edges_status.at({v, w})) continue;
 
             std::vector<int> common_neighborhood;
             common_neighborhood.reserve(_adj[w].size());
             for (int u : _adj[w]) {
-                if (edges_status[w].at(u) && _used.get(u))
+                if (edges_status.at({w, u}) && _used.get(u))
                     common_neighborhood.push_back(u);
             } 
 
@@ -197,7 +197,7 @@ std::vector<std::unordered_map<int, size_t>> FourCliquesReduction::edge_count_4c
                 int u = common_neighborhood[i];
                 for (size_t j = i + 1; j < common_neighborhood.size(); j++) {
                     int x = common_neighborhood[j];
-                    if (edges_status[u].find(x) != edges_status[u].end() && edges_status[u].at(x)) 
+                    if (edges_status.find({u, x}) != edges_status.end() && edges_status.at({u, x})) 
                         edge_4clqs[v].at(w) += 1;
                 }  
             }
@@ -207,7 +207,7 @@ std::vector<std::unordered_map<int, size_t>> FourCliquesReduction::edge_count_4c
     return edge_4clqs;
 }
 
-size_t FourCliquesReduction::edge_reduce_helper(std::vector<std::unordered_map<int, bool>> &edges_status, double const min_four_cliques) {
+size_t FourCliquesReduction::edge_reduce_helper(std::unordered_map<std::pair<int, int>, bool, pair_hash> &edges_status, double const min_four_cliques) {
     bool reduced = false;
     std::vector<std::unordered_map<int, size_t>> edge_4clqs = edge_count_4clqs(edges_status);
 
@@ -216,9 +216,9 @@ size_t FourCliquesReduction::edge_reduce_helper(std::vector<std::unordered_map<i
     for (int v = 0; v < (int) _N - 1; v++) {
         if (!_nodes_status[v]) continue;
         for (int w : _adj[v]) {
-            if (edges_status[v].at(w) && edge_4clqs[v][w] < min_four_cliques) {
-                edges_status[v].at(w) = false;
-                edges_status[w].at(v) = false;
+            if (edges_status.at({v, w}) && edge_4clqs[v][w] < min_four_cliques) {
+                edges_status.at({v, w}) = false;
+                edges_status.at({w, v}) = false;
                 num_edges_reduced += 1;
                 reduced = true;
             }
@@ -228,7 +228,7 @@ size_t FourCliquesReduction::edge_reduce_helper(std::vector<std::unordered_map<i
     return num_edges_reduced;
 }
 
-size_t FourCliquesReduction::edge_reduce(std::vector<std::unordered_map<int, bool>> &edges_status, double const k, double const q) {
+size_t FourCliquesReduction::edge_reduce(std::unordered_map<std::pair<int, int>, bool, pair_hash> &edges_status, double const k, double const q) {
     bool reduced = false;
 
     size_t min_four_cliques = ceil((q - 2 * k) * (q - 3 * k) / 2);
@@ -245,7 +245,7 @@ size_t FourCliquesReduction::edge_reduce(std::vector<std::unordered_map<int, boo
         if (!_nodes_status[v]) continue;
         size_t deg = 0;
         for (int u : _adj[v])
-            if (edges_status[v].at(u)) {
+            if (edges_status.at({v, u})) {
                 deg += 1;
             }
         // if (deg == 0)
