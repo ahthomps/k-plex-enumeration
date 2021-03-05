@@ -248,8 +248,8 @@ size_t FourCliquesReduction::edge_reduce(std::vector<std::unordered_map<int, boo
             if (edges_status[v].at(u)) {
                 deg += 1;
             }
-        if (deg == 0)
-        // if (deg < q - k)
+        // if (deg == 0)
+        if (deg < q - k)
             _nodes_status[v] = false;
     }
 
