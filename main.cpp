@@ -161,11 +161,9 @@ std::string run_edge_based_reductions(std::vector<std::vector<int>> &adj, std::v
         for (int w : adj[v]) {
             if (nodes_status[v] && nodes_status[w]) {
                 edges_status[v][w] = true;
-                edges_status[w][v] = true;
             }
             else {
                 edges_status[v][w] = false;
-                edges_status[w][v] = false;
             }
         }
 

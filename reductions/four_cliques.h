@@ -40,6 +40,7 @@ class FourCliquesReduction {
         size_t count_four_cliques_containing_vertex(int v, FastSet &used_too);
 
         bool reduction_helper(size_t min_four_cliques, FastSet &need_updating);
+        size_t edge_reduce_helper(std::vector<std::unordered_map<int, bool>> &edges_status, double const min_four_cliques);
 };
 
 #endif

@@ -205,11 +205,12 @@ std::vector<std::unordered_map<int, size_t>> FourCliquesReduction::edge_count_4c
     return edge_4clqs;
 }
 
-size_t FourCliquesReduction::edge_reduce(std::vector<std::unordered_map<int, bool>> &edges_status, double const k, double const q) {
+size_t FourCliquesReduction::edge_reduce_helper(std::vector<std::unordered_map<int, bool>> &edges_status, double const min_four_cliques) {
     bool reduced = false;
+    std::cout << "stuck here? " << std::endl;
     std::vector<std::unordered_map<int, size_t>> edge_4clqs = edge_count_4clqs(edges_status);
+    std::cout << "no" << std::endl;
 
-    size_t min_four_cliques = ceil((q - 2 * k) * (q - 3 * k) / 2);
     size_t num_edges_reduced = 0;
 
     for (int v = 0; v < (int) _N - 1; v++) {
@@ -224,15 +225,35 @@ size_t FourCliquesReduction::edge_reduce(std::vector<std::unordered_map<int, boo
         }
     }
 
+    return num_edges_reduced;
+}
+
+size_t FourCliquesReduction::edge_reduce(std::vector<std::unordered_map<int, bool>> &edges_status, double const k, double const q) {
+    bool reduced = false;
+
+    size_t min_four_cliques = ceil((q - 2 * k) * (q - 3 * k) / 2);
+    size_t num_edges_reduced = 0;
+    size_t current_num_edges_reduced = 0;
+
+    do {
+        current_num_edges_reduced = edge_reduce_helper(edges_status, min_four_cliques);
+        num_edges_reduced += current_num_edges_reduced;
+        std::cout << current_num_edges_reduced << std::endl;
+    }
+    while (current_num_edges_reduced != 0);
+
+    std::cout << "done" << std::endl;
+
     for (size_t v = 0; v < _N; v++) {
         if (!_nodes_status[v]) continue;
-        bool v_is_valid = false;
+        size_t deg = 0;
         for (int u : _adj[v])
             if (edges_status[v].at(u)) {
-                v_is_valid = true;
-                break;
+                deg += 1;
             }
-        _nodes_status[v] = v_is_valid;
+        if (deg == 0)
+        // if (deg < q - k)
+            _nodes_status[v] = false;
     }
 
     return num_edges_reduced;
