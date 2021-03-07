@@ -176,18 +176,18 @@ std::vector<std::unordered_map<int, size_t>> FourCliquesReduction::edge_count_4c
         if (!_nodes_status[v]) continue;
         _used.clear();
         for (int u : _adj[v]) {
-            if (edges_status.at({v, u}))
+            if (edges_status.at(std::make_pair(v, u)))
                 _used.add(u);
         }
 
         for (int w : _adj[v]) {
             edge_4clqs[v][w] = 0;
-            if (!edges_status.at({v, w})) continue;
+            if (!edges_status.at(std::make_pair(v, w))) continue;
 
             std::vector<int> common_neighborhood;
             common_neighborhood.reserve(_adj[w].size());
             for (int u : _adj[w]) {
-                if (edges_status.at({w, u}) && _used.get(u))
+                if (edges_status.at(std::make_pair(w, u)) && _used.get(u))
                     common_neighborhood.push_back(u);
             } 
 
@@ -197,7 +197,7 @@ std::vector<std::unordered_map<int, size_t>> FourCliquesReduction::edge_count_4c
                 int u = common_neighborhood[i];
                 for (size_t j = i + 1; j < common_neighborhood.size(); j++) {
                     int x = common_neighborhood[j];
-                    if (edges_status.find({u, x}) != edges_status.end() && edges_status.at({u, x})) 
+                    if (edges_status.find(std::make_pair(u, x)) != edges_status.end() && edges_status.at(std::make_pair(u, x))) 
                         edge_4clqs[v].at(w) += 1;
                 }  
             }
@@ -216,9 +216,9 @@ size_t FourCliquesReduction::edge_reduce_helper(std::unordered_map<std::pair<int
     for (int v = 0; v < (int) _N - 1; v++) {
         if (!_nodes_status[v]) continue;
         for (int w : _adj[v]) {
-            if (edges_status.at({v, w}) && edge_4clqs[v][w] < min_four_cliques) {
-                edges_status.at({v, w}) = false;
-                edges_status.at({w, v}) = false;
+            if (edges_status.at(std::make_pair(v, w)) && edge_4clqs[v][w] < min_four_cliques) {
+                edges_status.at(std::make_pair(v, w)) = false;
+                edges_status.at(std::make_pair(w, v)) = false;
                 num_edges_reduced += 1;
                 reduced = true;
             }
@@ -245,7 +245,7 @@ size_t FourCliquesReduction::edge_reduce(std::unordered_map<std::pair<int, int>,
         if (!_nodes_status[v]) continue;
         size_t deg = 0;
         for (int u : _adj[v])
-            if (edges_status.at({v, u})) {
+            if (edges_status.at(std::make_pair(v, u))) {
                 deg += 1;
             }
         // if (deg == 0)
