@@ -34,9 +34,13 @@ class TriangleReduction {
 
         bool reduce(size_t const k, size_t const m);
 
-        size_t count_triangles_containing_edge(std::unordered_map<std::pair<int, int>, bool, pair_hash> const &edges_status, int const v, int const u);
-        std::vector<std::unordered_map<int, size_t>> edge_count_triangles(std::unordered_map<std::pair<int, int>, bool, pair_hash> const &edges_status);
-        size_t edge_reduce(std::unordered_map<std::pair<int, int>, bool, pair_hash> &edges_status, size_t const k, size_t const q);
+        std::vector<std::unordered_map<int, size_t>> edge_count_triangles(std::vector<std::unordered_map<int, bool>> const &edges_status);
+        size_t edge_reduce(std::vector<std::unordered_map<int, bool>> &edges_status, size_t const k, size_t const q);
+
+        size_t count_triangles_containing_edge(std::unordered_map<std::pair<int, int>, bool, pair_hash> &edges_status, int const v, int const u);
+        std::unordered_map<std::pair<int, int>, size_t, pair_hash> edge_count_triangles_new(std::unordered_map<std::pair<int, int>, bool, pair_hash> &edges_status);
+        size_t edge_reduce_new(std::unordered_map<std::pair<int, int>, bool, pair_hash> &edges_status, size_t const k, size_t const q);
+        std::unordered_map<std::pair<int, int>, size_t, pair_hash> bruteforce_edge_count_triangles(std::unordered_map<std::pair<int, int>, bool, pair_hash> &edges_status);
 
     private:
         FastSet _used;
@@ -49,7 +53,8 @@ class TriangleReduction {
 
         bool reduction_helper(size_t min_triangles, FastSet &needs_updating);
 
-        size_t edge_reduce_helper(std::unordered_map<std::pair<int, int>, bool, pair_hash> &edges_status, size_t const min_triangles);
+        size_t edge_reduce_helper(std::vector<std::unordered_map<int, bool>> &edges_status, size_t const min_triangles);
+        size_t edge_reduce_helper_new(std::unordered_map<std::pair<int, int>, bool, pair_hash> &edges_status, std::unordered_map<std::pair<int, int>, size_t, pair_hash> &edge_triangles, std::vector<std::pair<int, int>> &need_updating, std::unordered_map<std::pair<int, int>, bool, pair_hash> &already_needs_updating, size_t const min_triangles);
 
         // void get_degeneracy_ordering(std::vector<int> &nodes_list,
         //                              std::vector<size_t> &degeneracy_ordering,
