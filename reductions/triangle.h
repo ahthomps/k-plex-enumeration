@@ -42,6 +42,10 @@ class TriangleReduction {
         size_t edge_reduce_new(std::unordered_map<std::pair<int, int>, bool, pair_hash> &edges_status, size_t const k, size_t const q);
         std::unordered_map<std::pair<int, int>, size_t, pair_hash> bruteforce_edge_count_triangles(std::unordered_map<std::pair<int, int>, bool, pair_hash> &edges_status);
 
+
+        size_t edge_reduce_helper_new2(std::unordered_map<std::pair<int, int>, bool, pair_hash> &edges_status, std::unordered_map<std::pair<int, int>, size_t, pair_hash> &edge_triangles, size_t const min_triangles);
+        size_t edge_reduce_new2(std::unordered_map<std::pair<int, int>, bool, pair_hash> &edges_status, size_t const k, size_t const q);
+
     private:
         FastSet _used;
         GraphTools _graph_tools;
@@ -55,6 +59,7 @@ class TriangleReduction {
 
         size_t edge_reduce_helper(std::vector<std::unordered_map<int, bool>> &edges_status, size_t const min_triangles);
         size_t edge_reduce_helper_new(std::unordered_map<std::pair<int, int>, bool, pair_hash> &edges_status, std::unordered_map<std::pair<int, int>, size_t, pair_hash> &edge_triangles, std::vector<std::pair<int, int>> &need_updating, std::unordered_map<std::pair<int, int>, bool, pair_hash> &already_needs_updating, size_t const min_triangles);
+        void delete_vertices_update_triangles(std::unordered_map<std::pair<int, int>, bool, pair_hash> &edges_status, std::unordered_map<std::pair<int, int>, size_t, pair_hash> &edge_triangles, size_t const k, size_t const q);
 
         // void get_degeneracy_ordering(std::vector<int> &nodes_list,
         //                              std::vector<size_t> &degeneracy_ordering,

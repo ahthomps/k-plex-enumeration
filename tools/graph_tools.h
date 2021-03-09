@@ -6,6 +6,7 @@
 #include <list>
 #include <tuple>
 #include <functional>
+#include <unordered_map>
 
 #include "fast_set.h"
 #include "timer.h"
@@ -173,6 +174,49 @@ class GraphTools {
                 std::vector<int> old_NodeID_neighborhood = adj[old_NodeID];
 
                 for (int old_NodeID_neighbor : old_NodeID_neighborhood) {
+                    int new_NodeID_neighbor = old_to_new_mapping[old_NodeID_neighbor];
+
+                    if (new_NodeID_neighbor != -1) {
+                        adj_list.push_back(new_NodeID_neighbor);
+                    }
+                }
+
+                std::sort(adj_list.begin(), adj_list.end());
+                sub_adj.push_back(adj_list);
+            }
+        }
+
+        void subgraph(std::vector<std::vector<int>> &adj, std::vector<bool> &nodes_status, std::unordered_map<std::pair<int, int>, bool, pair_hash> &edges_status, std::vector<std::vector<int>> &sub_adj) {
+
+            std::vector<int> old_to_new_mapping;
+            std::vector<int> new_to_old_mapping;
+            old_to_new_mapping.resize(adj.size(), -1);
+
+            int new_NodeID = 0;
+
+            for (int old_NodeID = 0; old_NodeID < (int) adj.size(); old_NodeID++) {
+                if (nodes_status[old_NodeID]) {
+                    new_to_old_mapping.push_back(old_NodeID);
+                    old_to_new_mapping[old_NodeID] = new_NodeID;
+                    new_NodeID++;
+                }
+            }
+
+            sub_adj.clear();
+            sub_adj.reserve(new_to_old_mapping.size());
+
+            for (int old_NodeID : new_to_old_mapping) {
+
+                std::vector<int> adj_list;
+                std::vector<int> old_NodeID_neighborhood = adj[old_NodeID];
+
+                for (int old_NodeID_neighbor : old_NodeID_neighborhood) {
+                    std::pair<int, int> edge;
+                    if (old_NodeID < old_NodeID_neighbor) edge = std::make_pair(old_NodeID, old_NodeID_neighbor);
+                    else edge = std::make_pair(old_NodeID_neighbor, old_NodeID);
+
+                    if (!edges_status.at(edge)) continue;
+
                     int new_NodeID_neighbor = old_to_new_mapping[old_NodeID_neighbor];
 
                     if (new_NodeID_neighbor != -1) {

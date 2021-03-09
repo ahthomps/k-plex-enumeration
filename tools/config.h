@@ -12,12 +12,14 @@ class Config {
     size_t k = 1;     // k-plex number
     size_t q = 1;     // minimum kplex size
     size_t expr = 0;
+    bool edgesub = false;
 
     Config(int argn, char **argv) {
 
         std::string set_q = "--q=";
         std::string set_k = "--k=";
         std::string set_expr = "--expr=";
+        std::string set_edge_sub = "--edgesub";
 
 
         for (int i = 1; i < argn; i++) {
@@ -41,6 +43,7 @@ class Config {
 	            else if (!first_part.compare(set_k)) k = value;
 	            else if (!first_part.compare(set_expr)) expr = value;
 			}
+			else if (argv_i == set_edge_sub) edgesub = true;
       	} 
     }
 };

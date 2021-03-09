@@ -452,6 +452,101 @@ size_t TriangleReduction::edge_reduce_new(std::unordered_map<std::pair<int, int>
     return num_edges_reduced;
 }
 
+std::pair<int, int> get_edge_pair(int v, int u) {
+    std::pair<int, int> edge;
+    if (v < u) edge = std::make_pair(v, u);
+    else edge = std::make_pair(u, v);
+
+    return edge;
+}
+
+size_t TriangleReduction::edge_reduce_helper_new2(std::unordered_map<std::pair<int, int>, bool, pair_hash> &edges_status, std::unordered_map<std::pair<int, int>, size_t, pair_hash> &edge_triangles, size_t const min_triangles) {
+    size_t num_edges_reduced = 0;
+
+    for (int v = 0; v < (int) _N; v++) {
+        if (!_nodes_status[v]) continue;
+
+        _used.clear();
+        for (int u : _adj[v]) {
+            if (edges_status.at(get_edge_pair(v, u))) {
+                _used.add(u);
+            }
+        }
+
+        for (int u : _adj[v]) {
+            std::pair<int, int> vu_edge = get_edge_pair(v, u);
+            if (v < u && _used.get(u) && edge_triangles.at(vu_edge) < min_triangles) {
+                edges_status.at(vu_edge) = false;
+                _used.remove(u);
+                num_edges_reduced += 1;
+
+                for (int w : _adj[u]) {
+                    if (!_used.get(w)) continue;
+                    std::pair<int, int> uw_edge = get_edge_pair(u, w);
+                    std::pair<int, int> vw_edge = get_edge_pair(v, w);
+
+                    if (edges_status.at(uw_edge) && edges_status.at(vw_edge)) {
+                        edge_triangles.at(uw_edge) -= 1;
+                        edge_triangles.at(vw_edge) -= 1;
+                    }
+                }
+            }
+        }
+    }
+    return num_edges_reduced;
+}
+
+void TriangleReduction::delete_vertices_update_triangles(std::unordered_map<std::pair<int, int>, bool, pair_hash> &edges_status, std::unordered_map<std::pair<int, int>, size_t, pair_hash> &edge_triangles, size_t const k, size_t const q) {
+    for (int v = 0; v < (int) _N; v++) {
+        if (!_nodes_status[v]) continue;
+
+        _used.clear();
+        size_t deg = 0;
+        for (int u : _adj[v]) {
+            if (edges_status.at(get_edge_pair(v, u))) {
+                deg += 1;
+                _used.add(u);
+            }
+        }
+
+        if (deg >= q - k) continue;
+
+        _nodes_status[v] = false;
+
+        for (int u : _adj[v]) {
+            if (!_used.get(u)) continue;
+            for (int w : _adj[u]) {
+                if (w < u || !_used.get(w)) continue;
+                if (edges_status.at(get_edge_pair(u, w))) {
+                    edge_triangles.at(get_edge_pair(u, w)) -= 1;
+                }
+            }
+        }
+
+        for (int u : _adj[v])
+            edges_status.at(get_edge_pair(v, u)) = false;
+    }
+}
+
+size_t TriangleReduction::edge_reduce_new2(std::unordered_map<std::pair<int, int>, bool, pair_hash> &edges_status, size_t const k, size_t const q) {
+    size_t min_triangles = q - (2 * k);
+    size_t total_edges_reduced = 0;
+    size_t edges_reduced = 0;
+
+    std::unordered_map<std::pair<int, int>, size_t, pair_hash> edge_triangles = edge_count_triangles_new(edges_status);
+
+    do {
+        edges_reduced = edge_reduce_helper_new2(edges_status, edge_triangles, min_triangles);
+        total_edges_reduced += edges_reduced;
+        delete_vertices_update_triangles(edges_status, edge_triangles, k, q);
+    } while (edges_reduced > 0);
+
+    return total_edges_reduced;
+
+}
+
+
+
 
 
 

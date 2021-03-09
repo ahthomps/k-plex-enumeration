@@ -150,6 +150,7 @@ bool FourCliquesReduction::reduction_helper(size_t min_four_cliques, FastSet &ne
 }
 
 bool FourCliquesReduction::reduce(size_t const k, size_t const m) {
+
     size_t min_four_cliques = ceil(double((m - k) * (m - 2 * k) * (m - 3 * k)) / 6);
     bool reduced = false;
     count_4clqs();
@@ -460,6 +461,139 @@ size_t FourCliquesReduction::edge_reduce_new(std::unordered_map<std::pair<int, i
     }
 
     return num_edges_reduced;
+}
+
+std::pair<int, int> FourCliquesReduction::get_edge_pair(int v, int u) {
+    std::pair<int, int> edge;
+    if (v < u) edge = std::make_pair(v, u);
+    else edge = std::make_pair(u, v);
+
+    return edge;
+}
+
+size_t FourCliquesReduction::edge_reduce_helper_new2(std::unordered_map<std::pair<int, int>, bool, pair_hash> &edges_status, std::unordered_map<std::pair<int, int>, size_t, pair_hash> &edge_4clqs, size_t const min_4clqs) {
+    size_t num_edges_reduced = 0;
+
+    for (int v = 0; v < (int) _N; v++) {
+        if (!_nodes_status[v]) continue;
+
+        _used.clear(); 
+        for (int u : _adj[v]) {
+            if (edges_status.at(get_edge_pair(v, u))) {
+                _used.add(u);
+            }
+        }
+
+        for (int u : _adj[v]) {
+            std::pair<int, int> vu_edge = get_edge_pair(v, u);
+            if (v < u && _used.get(u) && edge_4clqs.at(vu_edge) < min_4clqs) {
+                edges_status.at(vu_edge) = false;
+                _used.remove(u);
+                num_edges_reduced += 1;
+
+                std::vector<int> common_neighborhood;
+                for (int w : _adj[u]) {
+                    if (!_used.get(w)) continue;
+                    if (edges_status.at(get_edge_pair(v, w)) && edges_status.at(get_edge_pair(u, w))) {
+                        common_neighborhood.push_back(w);
+                    }
+                }
+
+                if (common_neighborhood.size() < 2) continue;
+
+                for (size_t i = 0; i < common_neighborhood.size() - 1; i++) {
+                    int w = common_neighborhood[i];
+
+                    std::pair<int, int> vw_edge = get_edge_pair(v, w);
+                    std::pair<int, int> uw_edge = get_edge_pair(u, w);
+
+                    for (size_t j = i + 1; j < common_neighborhood.size(); j++) {
+                        int x = common_neighborhood[j];
+                        std::pair<int, int> wx_edge = get_edge_pair(w, x);
+                        if (edges_status.find(wx_edge) != edges_status.end() && edges_status.at(wx_edge)) {
+
+                            std::pair<int, int> vx_edge = get_edge_pair(v, x);
+                            std::pair<int, int> ux_edge = get_edge_pair(u, x);
+
+                            // check for rn
+                            if (!edges_status.at(vw_edge) || !edges_status.at(vx_edge) || !edges_status.at(uw_edge) || !edges_status.at(ux_edge) || !edges_status.at(wx_edge)) {
+                                std::cout << "BAD!!" << std::endl;
+                                continue;
+                            }
+
+                            edge_4clqs.at(vw_edge) -= 1;
+                            edge_4clqs.at(vx_edge) -= 1;
+                            edge_4clqs.at(uw_edge) -= 1;
+                            edge_4clqs.at(ux_edge) -= 1;
+                            edge_4clqs.at(wx_edge) -= 1;
+                        }
+                    }
+                }
+            }
+        }
+    }
+    return num_edges_reduced;
+}
+
+void FourCliquesReduction::delete_vertices_update_4clqs(std::unordered_map<std::pair<int, int>, bool, pair_hash> &edges_status, std::unordered_map<std::pair<int, int>, size_t, pair_hash> &edge_4clqs, size_t const k, size_t const q) {
+    for (int v = 0; v < (int) _N; v++) {
+        if (!_nodes_status[v]) continue;
+
+        std::vector<int> neighborhood_v;
+        for (int u : _adj[v]) {
+            if (edges_status.at(get_edge_pair(v, u))) {
+                neighborhood_v.push_back(u);
+            }
+        }
+
+        if (neighborhood_v.size() >= q - k) continue;
+
+        _nodes_status[v] = false;
+
+        if (neighborhood_v.size() >= 3) {
+            for (size_t i = 0; i < neighborhood_v.size() - 2; i++) {
+                int u = neighborhood_v[i];
+
+                for (size_t j = i + 1; j < neighborhood_v.size() - 1; j++) {
+                    int w = neighborhood_v[j];
+                    std::pair<int, int> uw_edge = get_edge_pair(u, w);
+                    if (edges_status.find(uw_edge) == edges_status.end() || !edges_status.at(uw_edge)) continue;
+
+                    for (size_t k = j + 1; k < neighborhood_v.size(); k++) {
+                        int x = neighborhood_v[k];
+                        std::pair<int, int> ux_edge = get_edge_pair(u, x);
+                        std::pair<int, int> wx_edge = get_edge_pair(w, x);
+
+                        if (edges_status.find(ux_edge) == edges_status.end() || !edges_status.at(ux_edge) ||
+                            edges_status.find(wx_edge) == edges_status.end() || !edges_status.at(wx_edge)) continue;
+
+                        edge_4clqs.at(uw_edge) -= 1;
+                        edge_4clqs.at(ux_edge) -= 1;
+                        edge_4clqs.at(wx_edge) -= 1;
+                    }
+                }
+            }
+        }
+
+        for (int u : _adj[v])
+            edges_status.at(get_edge_pair(v, u)) = false;
+    }
+}
+
+size_t FourCliquesReduction::edge_reduce_new2(std::unordered_map<std::pair<int, int>, bool, pair_hash> &edges_status, double const k, double const q){
+    size_t min_4clqs = ceil((q - 2 * k) * (q - 3 * k) / 2);
+    size_t total_edges_reduced = 0;
+    size_t edges_reduced = 0;
+
+    std::unordered_map<std::pair<int, int>, size_t, pair_hash> edge_4clqs = edge_count_4clqs_new(edges_status);
+
+    do {
+        edges_reduced = edge_reduce_helper_new2(edges_status, edge_4clqs, min_4clqs);
+        total_edges_reduced += edges_reduced;
+        delete_vertices_update_4clqs(edges_status, edge_4clqs, k, q);
+    } while (edges_reduced > 0);
+
+    return total_edges_reduced;
 }
 
 

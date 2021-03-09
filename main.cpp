@@ -3,6 +3,7 @@
 #include <iterator>
 #include <string>
 #include <unordered_map>
+#include <ctime>
 
 #include "tools/timer.h"
 #include "tools/config.h"
@@ -154,7 +155,7 @@ std::string run_4clq_reduction(std::vector<std::vector<int>> &adj, std::vector<b
     return output;  
 }
 
-std::string run_edge_based_reductions(std::vector<std::vector<int>> &adj, std::vector<bool> &nodes_status, Config &config) {
+std::string run_edge_based_reductions(std::vector<std::vector<int>> &adj, std::vector<bool> &nodes_status, std::unordered_map<std::pair<int, int>, bool, pair_hash> &edges_status, Config &config) {
 
     // std::vector<std::unordered_map<int, bool>> edges_status(adj.size());
     // for (int v = 0; v < (int) adj.size(); v++)
@@ -167,30 +168,32 @@ std::string run_edge_based_reductions(std::vector<std::vector<int>> &adj, std::v
     //         }
     //     }
 
-    std::unordered_map<std::pair<int, int>, bool, pair_hash> edges_status_new;
-    for (int v = 0; v < (int) adj.size(); v++) {
-        for (int w : adj[v]) {
-            if (w < v) continue;
-            std::pair<int, int> edge(v, w);
-            if (nodes_status[v] && nodes_status[w])
-                edges_status_new[edge] = true;
-            else edges_status_new[edge] = false;
-        }
-    }
+    // std::unordered_map<std::pair<int, int>, bool, pair_hash> edges_status_new;
+    // for (int v = 0; v < (int) adj.size(); v++) {
+    //     for (int w : adj[v]) {
+    //         if (w < v) continue;
+    //         std::pair<int, int> edge(v, w);
+    //         if (nodes_status[v] && nodes_status[w])
+    //             edges_status_new[edge] = true;
+    //         else edges_status_new[edge] = false;
+    //     }
+    // }
 
     timer t;
 
     TriangleReduction triangle(adj, nodes_status);
-    // size_t triangle_edges_reduced = triangle.edge_reduce(edges_status, config.k, config.q);
-    size_t triangle_edges_reduced = triangle.edge_reduce_new(edges_status_new, config.k, config.q);
+    // size_t triangle_edges_reduced = triangle.edge_reduce_new(edges_status_new, config.k, config.q);
+    size_t triangle_edges_reduced = triangle.edge_reduce_new2(edges_status, config.k, config.q);
     double triangle_time = t.elapsed();
     size_t triangle_kernel = count_remaining_nodes(nodes_status);
+    t.restart();
 
     FourCliquesReduction fourcliques(adj, nodes_status);
     // size_t fourcliques_edges_reduced = fourcliques.edge_reduce(edges_status, config.k, config.q);
-    size_t fourcliques_edges_reduced = fourcliques.edge_reduce_new(edges_status_new, config.k, config.q);
+    size_t fourcliques_edges_reduced = fourcliques.edge_reduce_new2(edges_status, config.k, config.q);
     double fourcliques_time = t.elapsed();
     size_t fourcliques_kernel = count_remaining_nodes(nodes_status);
+    t.restart();
 
     std::string output = (std::to_string(triangle_edges_reduced) + " " + std::to_string(triangle_kernel) + " " + std::to_string(triangle_time) + " " +
                           std::to_string(fourcliques_edges_reduced) + " " + std::to_string(fourcliques_kernel) + " " + std::to_string(fourcliques_time) + " ");
@@ -198,84 +201,128 @@ std::string run_edge_based_reductions(std::vector<std::vector<int>> &adj, std::v
     return output;
 }
 
-std::string run_triangles_reds(std::vector<std::vector<int>> &adj, std::vector<bool> &nodes_status, Config &config) {
-
-    std::unordered_map<std::pair<int, int>, bool, pair_hash> edges_status_new;
-    for (int v = 0; v < (int) adj.size(); v++) {
-        for (int w : adj[v]) {
-            if (w < v) continue;
-            std::pair<int, int> edge(v, w);
-            if (nodes_status[v] && nodes_status[w])
-                edges_status_new[edge] = true;
-            else edges_status_new[edge] = false;
-        }
-    }
+std::string run_vertex_triangles_red(std::vector<std::vector<int>> &adj, std::vector<bool> &nodes_status, Config &config) {
 
     timer t;
 
-    TriangleReduction triangle_edge(adj, nodes_status);
-    size_t triangle_edge_edges_reduced = triangle_edge.edge_reduce_new(edges_status_new, config.k, config.q);
-    double triangle_edge_time = t.elapsed();
-    size_t triangle_edge_kernel = count_remaining_nodes(nodes_status);
-    t.restart();
-
     TriangleReduction triangle(adj, nodes_status);
-    size_t triangle_edges_reduced = triangle.reduce(config.k, config.q);
+    triangle.reduce(config.k, config.q);
     double triangle_time = t.elapsed();
     size_t triangle_kernel = count_remaining_nodes(nodes_status);
     t.restart();
 
-    std::string output = (std::to_string(triangle_edge_edges_reduced) + " " + std::to_string(triangle_edge_kernel) + " " + std::to_string(triangle_edge_time) + " " +
-                          std::to_string(triangle_edges_reduced) + " " + std::to_string(triangle_kernel) + " " + std::to_string(triangle_time) + " ");
+    std::string output = (std::to_string(triangle_kernel) + " " + std::to_string(triangle_time) + " ");
     return output;
 }
 
-std::string run_4clq_reds(std::vector<std::vector<int>> &adj, std::vector<bool> &nodes_status, Config &config) {
+std::string run_edge_triangles_red(std::vector<std::vector<int>> &adj, std::vector<bool> &nodes_status, std::unordered_map<std::pair<int, int>, bool, pair_hash> &edges_status, Config &config) {
 
-    std::unordered_map<std::pair<int, int>, bool, pair_hash> edges_status_new;
-    for (int v = 0; v < (int) adj.size(); v++) {
-        for (int w : adj[v]) {
-            if (w < v) continue;
-            std::pair<int, int> edge(v, w);
-            if (nodes_status[v] && nodes_status[w])
-                edges_status_new[edge] = true;
-            else edges_status_new[edge] = false;
-        }
-    }
+    // std::unordered_map<std::pair<int, int>, bool, pair_hash> edges_status_new;
+    // for (int v = 0; v < (int) adj.size(); v++) {
+    //     for (int w : adj[v]) {
+    //         if (w < v) continue;
+    //         std::pair<int, int> edge(v, w);
+    //         if (nodes_status[v] && nodes_status[w])
+    //             edges_status_new[edge] = true;
+    //         else edges_status_new[edge] = false;
+    //     }
+    // }
 
     timer t;
 
-    FourCliquesReduction fourcliques_edge(adj, nodes_status);
-    size_t fourcliques_edge_edges_reduced = fourcliques_edge.edge_reduce_new(edges_status_new, config.k, config.q);
-    double fourcliques_edge_time = t.elapsed();
-    size_t fourcliques_edge_kernel = count_remaining_nodes(nodes_status);
+    TriangleReduction triangle_edge(adj, nodes_status);
+    size_t triangle_edge_edges_reduced = triangle_edge.edge_reduce_new2(edges_status, config.k, config.q);
+    double triangle_edge_time = t.elapsed();
+    size_t triangle_edge_kernel = count_remaining_nodes(nodes_status);
     t.restart();
 
+    std::string output = (std::to_string(triangle_edge_edges_reduced) + " " + std::to_string(triangle_edge_kernel) + " " + std::to_string(triangle_edge_time) + " ");
+    return output;
+}
+
+std::string run_vertex_4clq_red(std::vector<std::vector<int>> &adj, std::vector<bool> &nodes_status, Config &config) {
+
+    // std::unordered_map<std::pair<int, int>, bool, pair_hash> edges_status_new;
+    // for (int v = 0; v < (int) adj.size(); v++) {
+    //     for (int w : adj[v]) {
+    //         if (w < v) continue;
+    //         std::pair<int, int> edge(v, w);
+    //         if (nodes_status[v] && nodes_status[w])
+    //             edges_status_new[edge] = true;
+    //         else edges_status_new[edge] = false;
+    //     }
+    // }
+
+    timer t;
+
     FourCliquesReduction fourcliques(adj, nodes_status);
-    size_t fourcliques_edges_reduced = fourcliques.reduce(config.k, config.q);
+    fourcliques.reduce(config.k, config.q);
     double fourcliques_time = t.elapsed();
     size_t fourcliques_kernel = count_remaining_nodes(nodes_status);
     t.restart();
 
-    std::string output = (std::to_string(fourcliques_edge_edges_reduced) + " " + std::to_string(fourcliques_edge_kernel) + " " + std::to_string(fourcliques_edge_time) + " " +
-                          std::to_string(fourcliques_edges_reduced) + " " + std::to_string(fourcliques_kernel) + " " + std::to_string(fourcliques_time) + " ");
+    std::string output = (std::to_string(fourcliques_kernel) + " " + std::to_string(fourcliques_time) + " ");
     return output;
 }
 
-void write_G_prime(std::vector<std::vector<int>> &adj, std::vector<bool> &nodes_status) {
+std::string run_edge_4clq_red(std::vector<std::vector<int>> &adj, std::vector<bool> &nodes_status, std::unordered_map<std::pair<int, int>, bool, pair_hash> &edges_status, Config &config) {
+
+    // std::unordered_map<std::pair<int, int>, bool, pair_hash> edges_status_new;
+    // for (int v = 0; v < (int) adj.size(); v++) {
+    //     for (int w : adj[v]) {
+    //         if (w < v) continue;
+    //         std::pair<int, int> edge(v, w);
+    //         if (nodes_status[v] && nodes_status[w])
+    //             edges_status_new[edge] = true;
+    //         else edges_status_new[edge] = false;
+    //     }
+    // }
+
+    timer t;  
+
+    FourCliquesReduction fourcliques_edge(adj, nodes_status);
+    size_t fourcliques_edge_edges_reduced = fourcliques_edge.edge_reduce_new2(edges_status, config.k, config.q);
+    double fourcliques_edge_time = t.elapsed();
+    size_t fourcliques_edge_kernel = count_remaining_nodes(nodes_status);
+    t.restart();
+
+    std::string output = (std::to_string(fourcliques_edge_edges_reduced) + " " + std::to_string(fourcliques_edge_kernel) + " " + std::to_string(fourcliques_edge_time) + " ");
+    return output;
+}
+
+std::string write_G_prime(std::vector<std::vector<int>> &adj, std::vector<bool> &nodes_status, std::unordered_map<std::pair<int, int>, bool, pair_hash> &edges_status, bool const edgesub) {
 
     GraphTools graph_tools;
     std::vector<std::vector<int>> new_adj;
-    graph_tools.subgraph(adj, nodes_status, new_adj);
+    if (edgesub)
+        graph_tools.subgraph(adj, nodes_status, edges_status, new_adj);
+    else graph_tools.subgraph(adj, nodes_status, new_adj);
 
     graph_access G_prime;
     graph_io::readGraphAdj(G_prime, new_adj);
 
+    std::string output = std::to_string(G_prime.number_of_nodes()) + " " + std::to_string(G_prime.number_of_edges()) + " ";
+
     std::string new_graph_name = "reduced.graph";
     graph_io::writeGraph(G_prime, new_graph_name);
 
-    return;
+    return output;
 }
+
+
+void build_edges_status(std::vector<std::vector<int>> &adj, std::vector<bool> &nodes_status, std::unordered_map<std::pair<int, int>, bool, pair_hash> &edges_status) {
+    edges_status.clear();
+        for (int v = 0; v < (int) adj.size(); v++) {
+            for (int w : adj[v]) {
+                if (w < v) continue;
+                std::pair<int, int> edge(v, w);
+                if (nodes_status[v] && nodes_status[w])
+                    edges_status[edge] = true;
+                else edges_status[edge] = false;
+            }
+        }
+}
+
 
 int main(int argn, char **argv) {
 
@@ -294,6 +341,7 @@ int main(int argn, char **argv) {
     std::string header = filename + " " + std::to_string(G.number_of_nodes()) + " " + std::to_string(G.number_of_edges()) + " ";
 
     std::vector<bool> nodes_status(adj.size(), true);
+    std::unordered_map<std::pair<int, int>, bool, pair_hash> edges_status;
 
     timer t;
 
@@ -302,23 +350,51 @@ int main(int argn, char **argv) {
     // run all old reductions and new edge based reductions
     if (config.expr == 0) {
         result += run_reductions(adj, nodes_status, config);
-        result += run_edge_based_reductions(adj, nodes_status, config);
+        build_edges_status(adj, nodes_status, edges_status);
+        result += run_edge_based_reductions(adj, nodes_status, edges_status, config);
     }
-    // run test to see if edge based triangles dominates triangles
+    // run conte then just vertex based triangles
     else if (config.expr == 1) {
         result += run_conte_reductions(adj, nodes_status, config);
-        result += run_triangles_reds(adj, nodes_status, config);
+        build_edges_status(adj, nodes_status, edges_status);
+        result += run_vertex_triangles_red(adj, nodes_status, config);
     }
-    // run test to see if edge based 4clqs dominates 4clqs
+    // run conte then just edge based triangles
     else if (config.expr == 2) {
         result += run_conte_reductions(adj, nodes_status, config);
-        result += run_4clq_reds(adj, nodes_status, config);
+        build_edges_status(adj, nodes_status, edges_status);
+        result += run_edge_triangles_red(adj, nodes_status, edges_status, config);
+    }
+    // run conte then just vertex based 4clqs
+    else if (config.expr == 3) {
+        result += run_conte_reductions(adj, nodes_status, config);
+        build_edges_status(adj, nodes_status, edges_status);
+        result += run_vertex_4clq_red(adj, nodes_status, config);
+    }
+    // run conte then just edge based 4clqs
+    else if (config.expr == 4) { 
+        result += run_conte_reductions(adj, nodes_status, config);
+        build_edges_status(adj, nodes_status, edges_status);
+        result += run_edge_4clq_red(adj, nodes_status, edges_status, config);
+    }
+    // run conte and vertex-basaed reductions
+    else if (config.expr == 5) {
+        result += run_reductions(adj, nodes_status, config);
+        build_edges_status(adj, nodes_status, edges_status);
+    }
+    // run conte and edge-based reductions
+    else if (config.expr == 6) {
+        result += run_conte_reductions(adj, nodes_status, config);
+        build_edges_status(adj, nodes_status, edges_status);
+        result += run_edge_based_reductions(adj, nodes_status, edges_status, config);
     }
 
     // std::string result = run_reductions(adj, nodes_status, config);
     // result += run_edge_based_reductions(adj, nodes_status, config);
+    double total_red_time = t.elapsed();
+    result += write_G_prime(adj, nodes_status, edges_status, config.edgesub);
+    result += std::to_string(total_red_time) + " ";
     std::cout << header << result;
-    write_G_prime(adj, nodes_status);
 
     return 0;
 }

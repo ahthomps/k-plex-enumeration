@@ -33,7 +33,7 @@ class FourCliquesReduction {
         std::unordered_map<std::pair<int, int>, size_t, pair_hash> edge_count_4clqs_new(std::unordered_map<std::pair<int, int>, bool, pair_hash> &edges_status);
         std::unordered_map<std::pair<int, int>, size_t, pair_hash> bruteforce_edge_count_4clqs(std::unordered_map<std::pair<int, int>, bool, pair_hash> &edges_status);
         size_t edge_reduce_new(std::unordered_map<std::pair<int, int>, bool, pair_hash> &edges_status, size_t const k, size_t const q);
-
+        size_t edge_reduce_new2(std::unordered_map<std::pair<int, int>, bool, pair_hash> &edges_status, double const k, double const q);
 
     private:
         FastSet _used;
@@ -47,7 +47,10 @@ class FourCliquesReduction {
         bool reduction_helper(size_t min_four_cliques, FastSet &need_updating);
         size_t edge_reduce_helper(std::vector<std::unordered_map<int, bool>> &edges_status, double const min_four_cliques);
         size_t edge_reduce_helper_new(std::unordered_map<std::pair<int, int>, bool, pair_hash> &edges_status, std::unordered_map<std::pair<int, int>, size_t, pair_hash> &edge_4clqs, std::vector<std::pair<int, int>> &need_updating, std::unordered_map<std::pair<int, int>, bool, pair_hash> &already_needs_updating, size_t const min_four_cliques);
+        size_t edge_reduce_helper_new2(std::unordered_map<std::pair<int, int>, bool, pair_hash> &edges_status, std::unordered_map<std::pair<int, int>, size_t, pair_hash> &edge_4clqs, size_t const min_4clqs);
 
+        std::pair<int, int> get_edge_pair(int v, int u);
+        void delete_vertices_update_4clqs(std::unordered_map<std::pair<int, int>, bool, pair_hash> &edges_status, std::unordered_map<std::pair<int, int>, size_t, pair_hash> &edge_triangles, size_t const k, size_t const q);
 
 };
 
