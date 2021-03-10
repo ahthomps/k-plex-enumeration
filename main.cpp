@@ -54,8 +54,13 @@ std::string run_conte_reductions(std::vector<std::vector<int>> &adj, std::vector
     size_t cliqueness_kernel = count_remaining_nodes(nodes_status);
     t.restart();
 
-    std::string output = (std::to_string(coreness_kernel) + " " + std::to_string(coreness_time) + " " +
-                          std::to_string(cliqueness_kernel) + " " + std::to_string(cliqueness_time) + " ");
+    double conte_time = coreness_time + cliqueness_time;
+    size_t conte_kernel = cliqueness_kernel;
+
+    // std::string output = (std::to_string(coreness_kernel) + " " + std::to_string(coreness_time) + " " +
+    //                       std::to_string(cliqueness_kernel) + " " + std::to_string(cliqueness_time) + " ");
+    std::string output = (std::to_string(conte_kernel) + " " + std::to_string(conte_time) + " ");
+    
     return output;
 }
 
@@ -78,6 +83,9 @@ std::string run_reductions(std::vector<std::vector<int>> &adj, std::vector<bool>
     size_t cliqueness_kernel = count_remaining_nodes(nodes_status);
     t.restart();
 
+    double conte_time = coreness_time + cliqueness_time;
+    size_t conte_kernel = cliqueness_kernel;
+
     TriangleReduction triangle(adj, nodes_status);
     triangle.reduce(config.k, config.q);
     double triangle_time = t.elapsed();
@@ -89,8 +97,11 @@ std::string run_reductions(std::vector<std::vector<int>> &adj, std::vector<bool>
     double fourcliques_time = t.elapsed();
     size_t fourcliques_kernel = count_remaining_nodes(nodes_status);
 
-    std::string output = (std::to_string(coreness_kernel) + " " + std::to_string(coreness_time) + " " +
-                          std::to_string(cliqueness_kernel) + " " + std::to_string(cliqueness_time) + " " +
+    // std::string output = (std::to_string(coreness_kernel) + " " + std::to_string(coreness_time) + " " +
+    //                       std::to_string(cliqueness_kernel) + " " + std::to_string(cliqueness_time) + " " +
+    //                       std::to_string(triangle_kernel) + " " + std::to_string(triangle_time) + " " +
+    //                       std::to_string(fourcliques_kernel) + " " + std::to_string(fourcliques_time) + " ");
+    std::string output = (std::to_string(conte_kernel) + " " + std::to_string(conte_time) + " " +
                           std::to_string(triangle_kernel) + " " + std::to_string(triangle_time) + " " +
                           std::to_string(fourcliques_kernel) + " " + std::to_string(fourcliques_time) + " ");
     return output;
