@@ -60,7 +60,7 @@ std::string run_conte_reductions(std::vector<std::vector<int>> &adj, std::vector
     // std::string output = (std::to_string(coreness_kernel) + " " + std::to_string(coreness_time) + " " +
     //                       std::to_string(cliqueness_kernel) + " " + std::to_string(cliqueness_time) + " ");
     std::string output = (std::to_string(conte_kernel) + " " + std::to_string(conte_time) + " ");
-    
+
     return output;
 }
 
@@ -301,7 +301,7 @@ std::string run_edge_4clq_red(std::vector<std::vector<int>> &adj, std::vector<bo
     return output;
 }
 
-std::string write_G_prime(std::vector<std::vector<int>> &adj, std::vector<bool> &nodes_status, std::unordered_map<std::pair<int, int>, bool, pair_hash> &edges_status, bool const edgesub) {
+std::string write_G_prime(std::vector<std::vector<int>> &adj, std::vector<bool> &nodes_status, std::unordered_map<std::pair<int, int>, bool, pair_hash> &edges_status, bool const edgesub, size_t const expr) {
 
     GraphTools graph_tools;
     std::vector<std::vector<int>> new_adj;
@@ -314,7 +314,9 @@ std::string write_G_prime(std::vector<std::vector<int>> &adj, std::vector<bool> 
 
     std::string output = std::to_string(G_prime.number_of_nodes()) + " " + std::to_string(G_prime.number_of_edges()) + " ";
 
-    std::string new_graph_name = "reduced.graph";
+    std::string new_graph_name;
+    if (expr == 0) new_graph_name = "reduced.graph";
+    else new_graph_name = "reduced" + std::to_string(expr) + ".graph";
     graph_io::writeGraph(G_prime, new_graph_name);
 
     return output;
@@ -403,7 +405,7 @@ int main(int argn, char **argv) {
     // std::string result = run_reductions(adj, nodes_status, config);
     // result += run_edge_based_reductions(adj, nodes_status, config);
     double total_red_time = t.elapsed();
-    result += write_G_prime(adj, nodes_status, edges_status, config.edgesub);
+    result += write_G_prime(adj, nodes_status, edges_status, config.edgesub, config.expr);
     result += std::to_string(total_red_time) + " ";
     std::cout << header << result;
 
