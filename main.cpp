@@ -314,9 +314,7 @@ std::string write_G_prime(std::vector<std::vector<int>> &adj, std::vector<bool> 
 
     std::string output = std::to_string(G_prime.number_of_nodes()) + " " + std::to_string(G_prime.number_of_edges()) + " ";
 
-    std::string new_graph_name;
-    if (expr == 0) new_graph_name = "reduced.graph";
-    else new_graph_name = "reduced" + std::to_string(expr) + ".graph";
+    std::string new_graph_name = "reduced" + std::to_string(expr) + ".graph";
     graph_io::writeGraph(G_prime, new_graph_name);
 
     return output;
