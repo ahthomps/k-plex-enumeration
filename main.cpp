@@ -15,6 +15,7 @@
 #include "reductions/cliqueness.h"
 #include "reductions/triangle.h"
 #include "reductions/four_cliques.h"
+#include "reductions/zhou.h"
 
 
 std::vector<std::vector<int>> buildAdjG(graph_access &G) {
@@ -57,9 +58,9 @@ std::string run_conte_reductions(std::vector<std::vector<int>> &adj, std::vector
     double conte_time = coreness_time + cliqueness_time;
     size_t conte_kernel = cliqueness_kernel;
 
-    // std::string output = (std::to_string(coreness_kernel) + " " + std::to_string(coreness_time) + " " +
-    //                       std::to_string(cliqueness_kernel) + " " + std::to_string(cliqueness_time) + " ");
-    std::string output = (std::to_string(conte_kernel) + " " + std::to_string(conte_time) + " ");
+    std::string output = (std::to_string(coreness_kernel) + " " + std::to_string(coreness_time) + " " +
+                          std::to_string(cliqueness_kernel) + " " + std::to_string(cliqueness_time) + " ");
+    // std::string output = (std::to_string(conte_kernel) + " " + std::to_string(conte_time) + " ");
 
     return output;
 }
@@ -228,17 +229,6 @@ std::string run_vertex_triangles_red(std::vector<std::vector<int>> &adj, std::ve
 
 std::string run_edge_triangles_red(std::vector<std::vector<int>> &adj, std::vector<bool> &nodes_status, std::unordered_map<std::pair<int, int>, bool, pair_hash> &edges_status, Config &config) {
 
-    // std::unordered_map<std::pair<int, int>, bool, pair_hash> edges_status_new;
-    // for (int v = 0; v < (int) adj.size(); v++) {
-    //     for (int w : adj[v]) {
-    //         if (w < v) continue;
-    //         std::pair<int, int> edge(v, w);
-    //         if (nodes_status[v] && nodes_status[w])
-    //             edges_status_new[edge] = true;
-    //         else edges_status_new[edge] = false;
-    //     }
-    // }
-
     timer t;
 
     TriangleReduction triangle_edge(adj, nodes_status);
@@ -253,17 +243,6 @@ std::string run_edge_triangles_red(std::vector<std::vector<int>> &adj, std::vect
 
 std::string run_vertex_4clq_red(std::vector<std::vector<int>> &adj, std::vector<bool> &nodes_status, Config &config) {
 
-    // std::unordered_map<std::pair<int, int>, bool, pair_hash> edges_status_new;
-    // for (int v = 0; v < (int) adj.size(); v++) {
-    //     for (int w : adj[v]) {
-    //         if (w < v) continue;
-    //         std::pair<int, int> edge(v, w);
-    //         if (nodes_status[v] && nodes_status[w])
-    //             edges_status_new[edge] = true;
-    //         else edges_status_new[edge] = false;
-    //     }
-    // }
-
     timer t;
 
     FourCliquesReduction fourcliques(adj, nodes_status);
@@ -277,17 +256,6 @@ std::string run_vertex_4clq_red(std::vector<std::vector<int>> &adj, std::vector<
 }
 
 std::string run_edge_4clq_red(std::vector<std::vector<int>> &adj, std::vector<bool> &nodes_status, std::unordered_map<std::pair<int, int>, bool, pair_hash> &edges_status, Config &config) {
-
-    // std::unordered_map<std::pair<int, int>, bool, pair_hash> edges_status_new;
-    // for (int v = 0; v < (int) adj.size(); v++) {
-    //     for (int w : adj[v]) {
-    //         if (w < v) continue;
-    //         std::pair<int, int> edge(v, w);
-    //         if (nodes_status[v] && nodes_status[w])
-    //             edges_status_new[edge] = true;
-    //         else edges_status_new[edge] = false;
-    //     }
-    // }
 
     timer t;  
 
@@ -334,30 +302,7 @@ void build_edges_status(std::vector<std::vector<int>> &adj, std::vector<bool> &n
         }
 }
 
-
-int main(int argn, char **argv) {
-
-    if (argn < 2) {
-        std::cout << "Cannot find graph" << std::endl;
-        exit(1);
-    }
-
-    Config config(argn, argv);
-
-    graph_access G;
-    std::string filename = argv[1];
-    graph_io::readGraphWeighted(G, filename);
-    std::vector<std::vector<int>> adj = buildAdjG(G);
-
-    std::string header = filename + " " + std::to_string(G.number_of_nodes()) + " " + std::to_string(G.number_of_edges()) + " ";
-
-    std::vector<bool> nodes_status(adj.size(), true);
-    std::unordered_map<std::pair<int, int>, bool, pair_hash> edges_status;
-
-    timer t;
-
-    std::string result;
-
+void vertex_versus_edge_experiments(std::vector<std::vector<int>> &adj, std::vector<bool> &nodes_status, std::unordered_map<std::pair<int, int>, bool, pair_hash> &edges_status, Config &config, std::string &result) {
     // run all old reductions and new edge based reductions
     if (config.expr == 0) {
         result += run_reductions(adj, nodes_status, config);
@@ -399,6 +344,46 @@ int main(int argn, char **argv) {
         build_edges_status(adj, nodes_status, edges_status);
         result += run_edge_based_reductions(adj, nodes_status, edges_status, config);
     }
+}
+
+void all_zhou_graphs_experiments(std::vector<std::vector<int>> &adj, std::vector<bool> &nodes_status, std::unordered_map<std::pair<int, int>, bool, pair_hash> &edges_status, Config &config, std::string &result) {
+    // run conte and edge-based reductions
+    if (config.expr == 0) {
+        result += run_conte_reductions(adj, nodes_status, config);
+        build_edges_status(adj, nodes_status, edges_status);
+        result += run_edge_based_reductions(adj, nodes_status, edges_status, config);
+    }
+    else if (config.expr == 1) {
+        result += run_conte_reductions(adj, nodes_status, config);
+        build_edges_status(adj, nodes_status, edges_status);
+    }
+}
+
+
+int main(int argn, char **argv) {
+
+    if (argn < 2) {
+        std::cout << "Cannot find graph" << std::endl;
+        exit(1);
+    }
+
+    Config config(argn, argv);
+
+    graph_access G;
+    std::string filename = argv[1];
+    graph_io::readGraphWeighted(G, filename);
+    std::vector<std::vector<int>> adj = buildAdjG(G);
+
+    std::string header = filename + " " + std::to_string(G.number_of_nodes()) + " " + std::to_string(G.number_of_edges()) + " ";
+
+    std::vector<bool> nodes_status(adj.size(), true);
+    std::unordered_map<std::pair<int, int>, bool, pair_hash> edges_status;
+
+    timer t;
+
+    std::string result;
+
+    all_zhou_graphs_experiments(adj, nodes_status, edges_status, config, result);
 
     // std::string result = run_reductions(adj, nodes_status, config);
     // result += run_edge_based_reductions(adj, nodes_status, config);
