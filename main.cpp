@@ -357,6 +357,10 @@ void all_zhou_graphs_experiments(std::vector<std::vector<int>> &adj, std::vector
         result += run_conte_reductions(adj, nodes_status, config);
         build_edges_status(adj, nodes_status, edges_status);
     }
+    else if (config.expr == 2) {
+        build_edges_status(adj, nodes_status, edges_status);
+        result += run_edge_based_reductions(adj, nodes_status, edges_status, config);
+    }
 }
 
 
