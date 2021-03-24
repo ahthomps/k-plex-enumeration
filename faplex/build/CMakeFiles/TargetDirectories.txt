@@ -1,3 +1,0 @@
-/Users/almathompson/Research/k-plex-enumeration/faplex/build/CMakeFiles/rebuild_cache.dir
-/Users/almathompson/Research/k-plex-enumeration/faplex/build/CMakeFiles/edit_cache.dir
-/Users/almathompson/Research/k-plex-enumeration/faplex/build/CMakeFiles/enplex.dir
