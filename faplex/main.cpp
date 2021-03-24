@@ -34,6 +34,7 @@ int main(int argc, char** argv) {
 	uli maxsec = 600;
 	ui decompose = 0;
 	ui isquiete = 0;
+	ui clustering = 0;
 
 	args::ArgumentParser parser(
         "Enplex, a software for enumerating kplex\n");
@@ -58,6 +59,8 @@ int main(int argc, char** argv) {
 
 	args::ValueFlag<int> Quiete(parser, "quiete", "quiete or not", {'q', "q"}, 0);
 
+	args::ValueFlag<int> Clustering(parser, "clustering", "clustering or not", {'c', "c"}, 0);
+
     try {
         parser.ParseCLI(argc, argv);
     } catch (args::Help) {
@@ -79,6 +82,7 @@ int main(int argc, char** argv) {
 	lb = args::get(LowerBound);
 	decompose = args::get(Decompose);
 	isquiete = args::get(Quiete);
+	clustering = args::get(Clustering);
 
 	if (decompose && lb < 2*k-2) {
 		fprintf(stderr, "lb is at least 2k-2 in decompose mode\n");
@@ -86,7 +90,7 @@ int main(int argc, char** argv) {
 	}
 	EnuBundle enbundle;
 	enbundle.readBinaryGraph(filepath);
-	enbundle.enumPlex(k,lb,maxsec, decompose,isquiete);
+	enbundle.enumPlex(k,lb,maxsec, decompose,isquiete, clustering);
 	//_CrtDumpMemoryLeaks();
 	return 0;
 }

@@ -569,18 +569,25 @@ void EnuBundle::checkSolution() {
 		ismax = 1;
 	if (ismax) {
 		cntplex++;
-#ifdef SHOWSOL
-		printf("Sol:");
-		for (ui i = 0; i < P.getSize(); i++) {
-			printf("%u ", bID[P.get(i)]);
+
+
+/* THIS IS WHAT I CHANGED TO PRINT EVERYTHING IN THE SOLUTION!!! */
+
+
+// #ifdef SHOWSOL
+		if (clustering) {
+			// printf("Sol:");
+			for (ui i = 0; i < P.getSize(); i++) {
+				printf("%u ", bID[P.get(i)]);
+			}
+			printf("\n");
 		}
-		printf("\n");
 	/*
 		ui rt = dbgCheckSolution();
 		if (!rt)
 			printf("Wrong solution pause\n");
 			*/
-#endif
+// #endif
 	}
 }
 
@@ -815,7 +822,7 @@ ubr: suggestion a vertex for branch
 	}	
 }
  
-void EnuBundle::enumPlex(ui _k, ui _lb, uli _maxsec, ui _isdecompose, ui _quiete)
+void EnuBundle::enumPlex(ui _k, ui _lb, uli _maxsec, ui _isdecompose, ui _quiete, ui _clustering)
 {	
 	startclk = clock();
 	k = _k;
@@ -823,6 +830,7 @@ void EnuBundle::enumPlex(ui _k, ui _lb, uli _maxsec, ui _isdecompose, ui _quiete
 	maxsec = _maxsec;
 	decompose = _isdecompose;
 	quiete = _quiete;
+	clustering = _clustering;
 
 	cntplex = 0;
 	interrupt = 0; //interrupt the program when time out.
@@ -935,7 +943,8 @@ void EnuBundle::enumPlex(ui _k, ui _lb, uli _maxsec, ui _isdecompose, ui _quiete
 		branch();
 	}
 	enumclk = clock();
-	printf("%u %.2f\n", cntplex, Utility::elapse_seconds(startclk, enumclk));
+	if (!clustering)
+		printf("%u %.2f\n", cntplex, Utility::elapse_seconds(startclk, enumclk));
 	// printf("Number of %u-cplex larger than %u:  %u\n", k, lb, cntplex);
 	// printf("Total search time %.2f\n", Utility::elapse_seconds(startclk, enumclk));
 	// printf("Sort time %.2f\n", Utility::elapse_seconds(startclk, sortclk));
