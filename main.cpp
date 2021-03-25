@@ -383,7 +383,7 @@ int main(int argn, char **argv) {
     if (slash_pos >= filename.size()) short_filename = filename.substr(0, dot_graph_pos);
     else short_filename = filename.substr(slash_pos + 1, dot_graph_pos - slash_pos - 1);
 
-    std::string header = short_filename + " " + std::to_string(G.number_of_nodes()) + " " + std::to_string(G.number_of_edges()) + " ";
+    std::string header = short_filename + " " + std::to_string(config.k) + " " + std::to_string(config.q) + " " + std::to_string(G.number_of_nodes()) + " " + std::to_string(G.number_of_edges()) + " ";
 
     std::vector<bool> nodes_status(adj.size(), true);
     std::unordered_map<std::pair<int, int>, bool, pair_hash> edges_status;
