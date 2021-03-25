@@ -93,7 +93,7 @@ int main(int argc, char** argv) {
 		size_t slash_pos = short_filename.rfind('/');
 		size_t bin_pos = short_filename.rfind(".bin");
 		short_filename = short_filename.substr(slash_pos + 1, bin_pos - slash_pos - 1);
-		std::cout << short_filename << " " << std::to_string(k) << " " << std::to_string(lb);
+		std::cout << short_filename << " " << std::to_string(k) << " " << std::to_string(lb) << " ";
 	}
 
 	if (decompose && lb < 2*k-2) {
