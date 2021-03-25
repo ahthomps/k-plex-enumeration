@@ -1,5 +1,7 @@
 #include "EnuBundle.h"
 #include "args.hxx"
+#include <string>
+#include <sstream>
 #define FILELEN 1024
 // #pragma comment(linker, "/STACK:102400000,102400000")
 //#define TRANSFER
@@ -61,6 +63,8 @@ int main(int argc, char** argv) {
 
 	args::ValueFlag<int> Clustering(parser, "clustering", "clustering or not", {'c', "c"}, 0);
 
+	args::ValueFlag<int> OnlyZhou(parser, "only zhou", "using only zhou or not", {'z', "z"}, 0);
+
     try {
         parser.ParseCLI(argc, argv);
     } catch (args::Help) {
@@ -84,7 +88,16 @@ int main(int argc, char** argv) {
 	isquiete = args::get(Quiete);
 	clustering = args::get(Clustering);
 
+	if (OnlyZhou) {
+		std::string short_filename = filepath;
+		size_t slash_pos = short_filename.rfind('/');
+		size_t bin_pos = short_filename.rfind(".bin");
+		short_filename = short_filename.substr(slash_pos + 1, bin_pos - slash_pos - 1);
+		std::cout << short_filename << " " << std::to_string(k) << " " << std::to_string(lb);
+	}
+
 	if (decompose && lb < 2*k-2) {
+
 		fprintf(stderr, "lb is at least 2k-2 in decompose mode\n");
 		exit(-1);
 	}
