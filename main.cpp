@@ -269,7 +269,7 @@ std::string run_edge_4clq_red(std::vector<std::vector<int>> &adj, std::vector<bo
     return output;
 }
 
-std::string write_G_prime(std::vector<std::vector<int>> &adj, std::vector<bool> &nodes_status, std::unordered_map<std::pair<int, int>, bool, pair_hash> &edges_status, bool const edgesub, size_t const expr) {
+std::string write_G_prime(std::vector<std::vector<int>> &adj, std::vector<bool> &nodes_status, std::unordered_map<std::pair<int, int>, bool, pair_hash> &edges_status, bool const edgesub, size_t const expr, std::string const filename, size_t k, size_t q) {
 
     GraphTools graph_tools;
     std::vector<std::vector<int>> new_adj;
@@ -282,7 +282,7 @@ std::string write_G_prime(std::vector<std::vector<int>> &adj, std::vector<bool> 
 
     std::string output = std::to_string(G_prime.number_of_nodes()) + " " + std::to_string(G_prime.number_of_edges()) + " ";
 
-    std::string new_graph_name = "reduced" + std::to_string(expr) + ".graph";
+    std::string new_graph_name = "reduced" + std::to_string(expr) + "-" + filename + "_" + std::to_string(k) + "_" + std::to_string(q) + ".graph";
     graph_io::writeGraph(G_prime, new_graph_name);
 
     return output;
@@ -377,8 +377,13 @@ int main(int argn, char **argv) {
     std::string filename = argv[1];
     graph_io::readGraphWeighted(G, filename);
     std::vector<std::vector<int>> adj = buildAdjG(G);
+    size_t slash_pos = filename.rfind('/');
+    size_t dot_graph_pos = filename.rfind('.');
+    std::string short_filename;
+    if (slash_pos >= filename.size()) short_filename = filename.substr(0, dot_graph_pos);
+    else short_filename = filename.substr(slash_pos + 1, dot_graph_pos - slash_pos - 1);
 
-    std::string header = filename + " " + std::to_string(G.number_of_nodes()) + " " + std::to_string(G.number_of_edges()) + " ";
+    std::string header = short_filename + " " + std::to_string(G.number_of_nodes()) + " " + std::to_string(G.number_of_edges()) + " ";
 
     std::vector<bool> nodes_status(adj.size(), true);
     std::unordered_map<std::pair<int, int>, bool, pair_hash> edges_status;
@@ -392,7 +397,7 @@ int main(int argn, char **argv) {
     // std::string result = run_reductions(adj, nodes_status, config);
     // result += run_edge_based_reductions(adj, nodes_status, config);
     double total_red_time = t.elapsed();
-    result += write_G_prime(adj, nodes_status, edges_status, config.edgesub, config.expr);
+    result += write_G_prime(adj, nodes_status, edges_status, config.edgesub, config.expr, short_filename, config.k, config.q);
     result += std::to_string(total_red_time) + " ";
     std::cout << header << result;
 
