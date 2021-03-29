@@ -4,8 +4,8 @@ CFLAGS = -std=c++11 -O3
 
 all: main
 
-main: optimized/graph_io.o optimized/bronKerbosch.o optimized/coreness.o optimized/MemoryManager.o optimized/Algorithm.o optimized/Tools.o optimized/DegeneracyTools.o optimized/DegeneracyAlgorithm.o optimized/cliqueness.o optimized/triangle.o optimized/four_cliques.o optimized/zhou.o optimized/EnuBundle.o tools/config.h main.cpp
-	g++ optimized/graph_io.o optimized/bronKerbosch.o optimized/coreness.o optimized/MemoryManager.o optimized/Algorithm.o optimized/Tools.o optimized/DegeneracyTools.o optimized/DegeneracyAlgorithm.o optimized/cliqueness.o optimized/triangle.o optimized/four_cliques.o optimized/zhou.o optimized/EnuBundle.o  main.cpp $(CFLAGS) -o main
+main: optimized/graph_io.o optimized/bronKerbosch.o optimized/coreness.o optimized/MemoryManager.o optimized/Algorithm.o optimized/Tools.o optimized/DegeneracyTools.o optimized/DegeneracyAlgorithm.o optimized/cliqueness.o optimized/triangle.o optimized/four_cliques.o optimized/EnuBundle.o tools/config.h main.cpp
+	g++ optimized/graph_io.o optimized/bronKerbosch.o optimized/coreness.o optimized/MemoryManager.o optimized/Algorithm.o optimized/Tools.o optimized/DegeneracyTools.o optimized/DegeneracyAlgorithm.o optimized/cliqueness.o optimized/triangle.o optimized/four_cliques.o optimized/EnuBundle.o  main.cpp $(CFLAGS) -o main
 
 optimized/bronKerbosch.o: bronKerbosch/bronKerbosch.cpp bronKerbosch/bronKerbosch.h
 	g++ bronKerbosch/bronKerbosch.cpp -c $(CFLAGS) -o optimized/bronKerbosch.o
@@ -24,9 +24,6 @@ optimized/triangle.o: reductions/triangle.cpp reductions/triangle.h
 
 optimized/four_cliques.o: reductions/four_cliques.cpp reductions/four_cliques.h
 	g++ reductions/four_cliques.cpp -c $(CFLAGS) -o optimized/four_cliques.o
-
-optimized/zhou.o: reductions/zhou.cpp reductions/zhou.h
-	g++ reductions/zhou.cpp -c $(CFLAGS) -o optimized/zhou.o
 
 optimized/MemoryManager.o: quick-cliques/MemoryManager.cpp quick-cliques/MemoryManager.h
 	g++ quick-cliques/MemoryManager.cpp -Winline -O2 -std=c++11 -g -DALLOW_ALLOC_ZERO_BYTES -c -o optimized/MemoryManager.o
