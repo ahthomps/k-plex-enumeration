@@ -13,7 +13,7 @@ class Config {
     size_t q = 1;     // minimum kplex size
     size_t expr = 0;
     bool edgesub = false;
-    bool ftime = 600;
+    size_t ftime = 600;
     bool faplex = false;
 
     Config(int argn, char **argv) {
