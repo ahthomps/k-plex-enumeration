@@ -13,6 +13,8 @@ class Config {
     size_t q = 1;     // minimum kplex size
     size_t expr = 0;
     bool edgesub = false;
+    bool ftime = 600;
+    bool faplex = false;
 
     Config(int argn, char **argv) {
 
@@ -20,6 +22,8 @@ class Config {
         std::string set_k = "--k=";
         std::string set_expr = "--expr=";
         std::string set_edge_sub = "--edgesub";
+        std::string set_ftime = "--ftime=";
+        std::string set_faplex = "--faplex";
 
 
         for (int i = 1; i < argn; i++) {
@@ -42,8 +46,10 @@ class Config {
 	            }
 	            else if (!first_part.compare(set_k)) k = value;
 	            else if (!first_part.compare(set_expr)) expr = value;
+	            else if (!first_part.compare(set_ftime)) ftime = value;
 			}
 			else if (argv_i == set_edge_sub) edgesub = true;
+			else if (argv_i == set_faplex) faplex = true;
       	} 
     }
 };

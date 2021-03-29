@@ -15,6 +15,7 @@
 #include "reductions/cliqueness.h"
 #include "reductions/triangle.h"
 #include "reductions/four_cliques.h"
+#include "faplex/EnuBundle.h"
 // #include "reductions/zhou.h"
 
 
@@ -34,6 +35,24 @@ size_t count_remaining_nodes(std::vector<bool> &nodes_status) {
     size_t count = 0;
     for (bool node : nodes_status) if (node) count++;
     return count;
+}
+
+std::string run_faplex(std::string const &reduced_graph_name, Config const &config) {
+    // c is for when you want to print out all kplexes, z is for when you are just running faplex 
+
+    std::string bin_filename = reduced_graph_name.substr(0, reduced_graph_name.rfind(".graph")) + ".bin";
+    std::string script =  "\n#/bin/bash \n./faplex/examples/toBin " + reduced_graph_name + " " + bin_filename;
+
+    std::system(script.c_str());
+
+    EnuBundle enbundle;
+    enbundle.readBinaryGraph(bin_filename.c_str());
+    std::pair<size_t, double> faplex_ouput;
+    faplex_ouput = enbundle.enumPlex(config.k, config.q, config.ftime, 1, 1, 0, 1);
+
+    std::string output = std::to_string(faplex_ouput.first) + " " + std::to_string(faplex_ouput.second) + " ";
+
+    return output;
 }
 
 std::string run_conte_reductions(std::vector<std::vector<int>> &adj, std::vector<bool> &nodes_status, Config &config) {
@@ -269,7 +288,7 @@ std::string run_edge_4clq_red(std::vector<std::vector<int>> &adj, std::vector<bo
     return output;
 }
 
-std::string write_G_prime(std::vector<std::vector<int>> &adj, std::vector<bool> &nodes_status, std::unordered_map<std::pair<int, int>, bool, pair_hash> &edges_status, bool const edgesub, size_t const expr, std::string const filename, size_t k, size_t q) {
+std::string write_G_prime(std::vector<std::vector<int>> &adj, std::vector<bool> &nodes_status, std::unordered_map<std::pair<int, int>, bool, pair_hash> &edges_status, bool const edgesub, std::string const &reduced_graph_name) {
 
     GraphTools graph_tools;
     std::vector<std::vector<int>> new_adj;
@@ -282,8 +301,7 @@ std::string write_G_prime(std::vector<std::vector<int>> &adj, std::vector<bool> 
 
     std::string output = std::to_string(G_prime.number_of_nodes()) + " " + std::to_string(G_prime.number_of_edges()) + " ";
 
-    std::string new_graph_name = "reduced" + std::to_string(expr) + "-" + filename + "_" + std::to_string(k) + "_" + std::to_string(q) + ".graph";
-    graph_io::writeGraph(G_prime, new_graph_name);
+    graph_io::writeGraph(G_prime, reduced_graph_name);
 
     return output;
 }
@@ -384,6 +402,8 @@ int main(int argn, char **argv) {
     else short_filename = filename.substr(slash_pos + 1, dot_graph_pos - slash_pos - 1);
 
     std::string header = short_filename + " " + std::to_string(config.k) + " " + std::to_string(config.q) + " " + std::to_string(G.number_of_nodes()) + " " + std::to_string(G.number_of_edges()) + " ";
+    std::string reduced_graph_name = "reduced" + std::to_string(config.expr) + "-" + short_filename + "_" + std::to_string(config.k) + "_" + std::to_string(config.q) + ".graph";
+
 
     std::vector<bool> nodes_status(adj.size(), true);
     std::unordered_map<std::pair<int, int>, bool, pair_hash> edges_status;
@@ -392,14 +412,20 @@ int main(int argn, char **argv) {
 
     std::string result;
 
-    all_zhou_graphs_experiments(adj, nodes_status, edges_status, config, result);
+    all_zhou_graphs_experiments(adj, nodes_status, edges_status, config, result);     
 
     // std::string result = run_reductions(adj, nodes_status, config);
     // result += run_edge_based_reductions(adj, nodes_status, config);
     double total_red_time = t.elapsed();
-    result += write_G_prime(adj, nodes_status, edges_status, config.edgesub, config.expr, short_filename, config.k, config.q);
+    result += write_G_prime(adj, nodes_status, edges_status, config.edgesub, reduced_graph_name);
     result += std::to_string(total_red_time) + " ";
-    std::cout << header << result;
+
+    if (config.faplex) {
+        result += run_faplex(reduced_graph_name, config);
+        std::cout << header << result << std::endl;;
+    }
+    else
+        std::cout << header << result;
 
     return 0;
 }

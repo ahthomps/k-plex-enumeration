@@ -822,7 +822,7 @@ ubr: suggestion a vertex for branch
 	}	
 }
  
-void EnuBundle::enumPlex(ui _k, ui _lb, uli _maxsec, ui _isdecompose, ui _quiete, ui _clustering)
+std::pair<size_t, double> EnuBundle::enumPlex(ui _k, ui _lb, uli _maxsec, ui _isdecompose, ui _quiete, ui _clustering, ui _inkplexenum)
 {	
 	startclk = clock();
 	k = _k;
@@ -831,6 +831,7 @@ void EnuBundle::enumPlex(ui _k, ui _lb, uli _maxsec, ui _isdecompose, ui _quiete
 	decompose = _isdecompose;
 	quiete = _quiete;
 	clustering = _clustering;
+	inkplexenum = _inkplexenum;
 
 	cntplex = 0;
 	interrupt = 0; //interrupt the program when time out.
@@ -943,12 +944,13 @@ void EnuBundle::enumPlex(ui _k, ui _lb, uli _maxsec, ui _isdecompose, ui _quiete
 		branch();
 	}
 	enumclk = clock();
-	if (!clustering)
+	if (!clustering && !inkplexenum)
 		printf("%u %.2f\n", cntplex, Utility::elapse_seconds(startclk, enumclk));
 	// printf("Number of %u-cplex larger than %u:  %u\n", k, lb, cntplex);
 	// printf("Total search time %.2f\n", Utility::elapse_seconds(startclk, enumclk));
 	// printf("Sort time %.2f\n", Utility::elapse_seconds(startclk, sortclk));
 	//printf("Totoal nodes %u \n", nnodes);
+	return std::make_pair(cntplex, Utility::elapse_seconds(startclk, enumclk));
 }
 
 EnuBundle::EnuBundle()

@@ -103,7 +103,7 @@ int main(int argc, char** argv) {
 	}
 	EnuBundle enbundle;
 	enbundle.readBinaryGraph(filepath);
-	enbundle.enumPlex(k,lb,maxsec, decompose,isquiete, clustering);
+	enbundle.enumPlex(k,lb,maxsec, decompose,isquiete, clustering, 0);
 	//_CrtDumpMemoryLeaks();
 	return 0;
 }

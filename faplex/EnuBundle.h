@@ -111,6 +111,7 @@ class EnuBundle
 	ui decompose;
 	ui quiete; 
 	ui clustering;
+	ui inkplexenum;
 
 	//induced subgraph
 	ui bvtx;
@@ -206,7 +207,7 @@ public:
 
 	int degeneracyOrder(ui * seq, ui * core, ui * pos);
 	
-	void enumPlex(ui _k, ui _lb, uli maxsec, ui _isdecomp, ui _quiete, ui _clustering);
+	std::pair<size_t, double> enumPlex(ui _k, ui _lb, uli maxsec, ui _isdecomp, ui _quiete, ui _clustering, ui _inkplexenum);
 
 	//ui checkMaximal(vector<ui>& S, ui * degS);
 
