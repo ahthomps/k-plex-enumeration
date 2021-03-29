@@ -41,14 +41,18 @@ std::string run_faplex(std::string const &reduced_graph_name, Config const &conf
     // c is for when you want to print out all kplexes, z is for when you are just running faplex 
 
     std::string bin_filename = reduced_graph_name.substr(0, reduced_graph_name.rfind(".graph")) + ".bin";
-    std::string script =  "\n#/bin/bash \n./faplex/examples/toBin " + reduced_graph_name + " " + bin_filename;
+    std::string script =  "\n#/bin/bash \n./faplex/examples/toBin " + reduced_graph_name;
+
+    unsigned int k = static_cast<unsigned int>(config.k);
+    unsigned int q = static_cast<unsigned int>(config.q);
+    unsigned long int ftime = static_cast<unsigned long int>(config.ftime);
 
     std::system(script.c_str());
 
     EnuBundle enbundle;
     enbundle.readBinaryGraph(bin_filename.c_str());
-    std::pair<size_t, double> faplex_ouput;
-    faplex_ouput = enbundle.enumPlex(config.k, config.q, config.ftime, 1, 1, 0, 1);
+    std::pair<unsigned int, double> faplex_ouput;
+    faplex_ouput = enbundle.enumPlex(k, q, ftime, 1, 1, 0, 1);
 
     std::string output = std::to_string(faplex_ouput.first) + " " + std::to_string(faplex_ouput.second) + " ";
 

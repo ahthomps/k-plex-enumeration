@@ -822,7 +822,7 @@ ubr: suggestion a vertex for branch
 	}	
 }
  
-std::pair<size_t, double> EnuBundle::enumPlex(ui _k, ui _lb, uli _maxsec, ui _isdecompose, ui _quiete, ui _clustering, ui _inkplexenum)
+std::pair<ui, double> EnuBundle::enumPlex(ui _k, ui _lb, uli _maxsec, ui _isdecompose, ui _quiete, ui _clustering, ui _inkplexenum)
 {	
 	startclk = clock();
 	k = _k;

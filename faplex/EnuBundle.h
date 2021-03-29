@@ -207,7 +207,7 @@ public:
 
 	int degeneracyOrder(ui * seq, ui * core, ui * pos);
 	
-	std::pair<size_t, double> enumPlex(ui _k, ui _lb, uli maxsec, ui _isdecomp, ui _quiete, ui _clustering, ui _inkplexenum);
+	std::pair<ui, double> enumPlex(ui _k, ui _lb, uli maxsec, ui _isdecomp, ui _quiete, ui _clustering, ui _inkplexenum);
 
 	//ui checkMaximal(vector<ui>& S, ui * degS);
 
