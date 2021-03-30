@@ -1006,7 +1006,7 @@ EnuBundle::~EnuBundle()
 	delete[] nID;
 	delete[] bstart;
 	delete[] bedges;
-	//delete[] badc;
+	delete[] badc;
 	//delete binv;
 	delete[] neiInG;
 	delete[] neiInP;
