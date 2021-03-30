@@ -37,20 +37,36 @@ size_t count_remaining_nodes(std::vector<bool> &nodes_status) {
     return count;
 }
 
-std::string run_faplex(std::string const &reduced_graph_name, Config const &config) {
-    // c is for when you want to print out all kplexes, z is for when you are just running faplex 
+// std::string run_faplex(std::string const &reduced_graph_name, Config const &config) {
+//     // c is for when you want to print out all kplexes, z is for when you are just running faplex 
 
-    std::string bin_filename = reduced_graph_name.substr(0, reduced_graph_name.rfind(".graph")) + ".bin";
-    std::string script =  "\n#/bin/bash \n./faplex/examples/toBin " + reduced_graph_name;
+//     std::string bin_filename = reduced_graph_name.substr(0, reduced_graph_name.rfind(".graph")) + ".bin";
+//     std::string script =  "\n#/bin/bash \n./faplex/examples/toBin " + reduced_graph_name;
+
+//     unsigned int k = static_cast<unsigned int>(config.k);
+//     unsigned int q = static_cast<unsigned int>(config.q);
+//     unsigned long int ftime = static_cast<unsigned long int>(config.ftime);
+
+//     std::system(script.c_str());
+
+//     EnuBundle enbundle;
+//     enbundle.readBinaryGraph(bin_filename.c_str());
+//     std::pair<unsigned int, double> faplex_ouput;
+//     faplex_ouput = enbundle.enumPlex(k, q, ftime, 1, 1, 0, 1);
+
+//     std::string output = std::to_string(faplex_ouput.first) + " " + std::to_string(faplex_ouput.second) + " ";
+
+//     return output;
+// }
+
+std::string run_faplex(std::vector<std::vector<int>> &adj, size_t numedges, Config const &config) {
 
     unsigned int k = static_cast<unsigned int>(config.k);
     unsigned int q = static_cast<unsigned int>(config.q);
     unsigned long int ftime = static_cast<unsigned long int>(config.ftime);
 
-    std::system(script.c_str());
-
     EnuBundle enbundle;
-    enbundle.readBinaryGraph(bin_filename.c_str());
+    enbundle.readAdjGraph(adj, numedges);
     std::pair<unsigned int, double> faplex_ouput;
     faplex_ouput = enbundle.enumPlex(k, q, ftime, 1, 1, 0, 1);
 
@@ -292,15 +308,15 @@ std::string run_edge_4clq_red(std::vector<std::vector<int>> &adj, std::vector<bo
     return output;
 }
 
-std::string write_G_prime(std::vector<std::vector<int>> &adj, std::vector<bool> &nodes_status, std::unordered_map<std::pair<int, int>, bool, pair_hash> &edges_status, bool const edgesub, std::string const &reduced_graph_name) {
+std::string write_G_prime(std::vector<std::vector<int>> &adj, std::vector<bool> &nodes_status, std::unordered_map<std::pair<int, int>, bool, pair_hash> &edges_status, graph_access &G_prime, bool const edgesub, std::string const &reduced_graph_name) {
 
     GraphTools graph_tools;
     std::vector<std::vector<int>> new_adj;
     if (edgesub)
         graph_tools.subgraph(adj, nodes_status, edges_status, new_adj);
     else graph_tools.subgraph(adj, nodes_status, new_adj);
+    adj = new_adj;
 
-    graph_access G_prime;
     graph_io::readGraphAdj(G_prime, new_adj);
 
     std::string output = std::to_string(G_prime.number_of_nodes()) + " " + std::to_string(G_prime.number_of_edges()) + " ";
@@ -421,11 +437,12 @@ int main(int argn, char **argv) {
     // std::string result = run_reductions(adj, nodes_status, config);
     // result += run_edge_based_reductions(adj, nodes_status, config);
     double total_red_time = t.elapsed();
-    result += write_G_prime(adj, nodes_status, edges_status, config.edgesub, reduced_graph_name);
+    graph_access G_prime;
+    result += write_G_prime(adj, nodes_status, edges_status, G_prime, config.edgesub, reduced_graph_name);
     result += std::to_string(total_red_time) + " ";
 
     if (config.faplex) {
-        result += run_faplex(reduced_graph_name, config);
+        result += run_faplex(adj, G_prime.number_of_edges(), config);
         std::cout << header << result << std::endl;;
     }
     else

@@ -47,6 +47,30 @@ int EnuBundle::readBinaryGraph(const char* filepath) {
 	return 0;
 }
 
+int EnuBundle::readAdjGraph(std::vector<std::vector<int>> const &adj, const ui num_edges) {
+	n = adj.size();
+	m = num_edges;
+
+	if (pstart != nullptr) delete[] pstart;
+	pstart = new ui[n + 1];
+	if (edges != nullptr) delete[] edges;
+	edges = new ui[m];
+
+	pstart[0] = 0;
+	for (ui i = 0; i < n; i++) {
+		size_t size = adj[i].size();
+		if (size > 0) {
+			ui* placeholder = new ui[size];
+			for (size_t j = 0; j < size; j++)
+				placeholder[j] = static_cast<ui>(adj[i][j]);
+			std::copy(placeholder, placeholder + size, edges + pstart[i]);
+			delete [] placeholder;
+		}
+		pstart[i + 1] = pstart[i] + static_cast<ui>(size);
+	}
+	return 0;
+}
+
 int EnuBundle::degeneracyOrder(ui *seq, ui *core, ui* pos) {
 	ui *id_s = seq, *degree = core;
 	for (ui i = 0; i < n; i++) {

@@ -203,6 +203,7 @@ class EnuBundle
 	clock_t enumclk;
 	
 public:
+	int readAdjGraph(std::vector<std::vector<int>> const &adj, const ui num_edges);
 	int readBinaryGraph(const char * filepath);
 
 	int degeneracyOrder(ui * seq, ui * core, ui * pos);
