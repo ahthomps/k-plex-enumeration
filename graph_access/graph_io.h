@@ -25,6 +25,9 @@ class graph_io {
                 virtual ~graph_io () ;
 
                 static
+                std::vector<std::vector<int>> buildAdjG(graph_access &G);
+
+                static
                 int readGraphWeighted(graph_access & G, const std::string & filename);
 
                 static

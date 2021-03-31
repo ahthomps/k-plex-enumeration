@@ -846,7 +846,7 @@ ubr: suggestion a vertex for branch
 	}	
 }
  
-std::pair<ui, double> EnuBundle::enumPlex(ui _k, ui _lb, uli _maxsec, ui _isdecompose, ui _quiete, ui _clustering, ui _inkplexenum)
+std::tuple<ui, double, ui> EnuBundle::enumPlex(ui _k, ui _lb, uli _maxsec, ui _isdecompose, ui _quiete, ui _clustering, ui _inkplexenum)
 {	
 	startclk = clock();
 	k = _k;
@@ -974,7 +974,7 @@ std::pair<ui, double> EnuBundle::enumPlex(ui _k, ui _lb, uli _maxsec, ui _isdeco
 	// printf("Total search time %.2f\n", Utility::elapse_seconds(startclk, enumclk));
 	// printf("Sort time %.2f\n", Utility::elapse_seconds(startclk, sortclk));
 	//printf("Totoal nodes %u \n", nnodes);
-	return std::make_pair(cntplex, Utility::elapse_seconds(startclk, enumclk));
+	return std::make_tuple(cntplex, Utility::elapse_seconds(startclk, enumclk), interrupt);
 }
 
 EnuBundle::EnuBundle()

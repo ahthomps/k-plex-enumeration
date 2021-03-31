@@ -2,8 +2,11 @@
 #include <vector>
 #include <iterator>
 #include <list>
+#include <unordered_map>
 
 #include "../bronKerbosch/bronKerbosch.h"
+#include "../tools/definitions.h"
+#include "../tools/timer.h"
 
 
 #ifndef CLIQUENESS_H_
@@ -11,13 +14,7 @@
 
 class CliquenessReduction {
     public:
-        std::vector<std::vector<int>>& _adj;
-        std::vector<bool>& _nodes_status;
-        size_t _N;
-        std::vector<size_t> _max_clq;
-        size_t _max_clq_size = 0; 
-
-        CliquenessReduction(std::vector<std::vector<int>> *adj, std::vector<bool> *nodes_status);
+        CliquenessReduction(std::vector<std::vector<int>> *adj, std::vector<bool> *nodes_status, std::unordered_map<std::pair<int, int>, bool, pair_hash> &edges_status, timer &t, double time_limit);
         ~CliquenessReduction() {}; 
 
         void integrated_quick_clqs();
@@ -29,6 +26,15 @@ class CliquenessReduction {
         bool reduce_old(double const clique_size, double const kplex);
 
     private:
+
+        std::vector<std::vector<int>>& _adj;
+        std::vector<bool>& _nodes_status;
+        std::unordered_map<std::pair<int, int>, bool, pair_hash> &_edges_status;
+        size_t _N;
+        double _time_limit;
+        timer &_t;
+        std::vector<size_t> _max_clq;
+        size_t _max_clq_size = 0; 
 
         std::function<bool(std::vector<std::vector<int>> const *, std::vector<int>, std::vector<int>, std::vector<int>)> _update_largest_clique_first = [&] (std::vector<std::vector<int>> const * p_adj, std::vector<int> R, std::vector<int> level_set_one, std::vector<int> level_set_two) -> bool {
             for (int const v : R) {

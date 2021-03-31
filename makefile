@@ -4,7 +4,7 @@ CFLAGS = -std=c++11 -O3
 
 all: main
 
-main: optimized/graph_io.o optimized/bronKerbosch.o optimized/coreness.o optimized/MemoryManager.o optimized/Algorithm.o optimized/Tools.o optimized/DegeneracyTools.o optimized/DegeneracyAlgorithm.o optimized/cliqueness.o optimized/triangle.o optimized/four_cliques.o optimized/EnuBundle.o tools/config.h main.cpp
+main: optimized/graph_io.o optimized/bronKerbosch.o optimized/coreness.o optimized/MemoryManager.o optimized/Algorithm.o optimized/Tools.o optimized/DegeneracyTools.o optimized/DegeneracyAlgorithm.o optimized/cliqueness.o optimized/triangle.o optimized/four_cliques.o optimized/EnuBundle.o tools/config.h kplex_enum.h main.cpp
 	g++ optimized/graph_io.o optimized/bronKerbosch.o optimized/coreness.o optimized/MemoryManager.o optimized/Algorithm.o optimized/Tools.o optimized/DegeneracyTools.o optimized/DegeneracyAlgorithm.o optimized/cliqueness.o optimized/triangle.o optimized/four_cliques.o optimized/EnuBundle.o  main.cpp $(CFLAGS) -o main
 
 optimized/bronKerbosch.o: bronKerbosch/bronKerbosch.cpp bronKerbosch/bronKerbosch.h

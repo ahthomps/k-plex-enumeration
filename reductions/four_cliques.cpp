@@ -10,14 +10,14 @@
 #include "four_cliques.h"
 #include "../tools/timer.h"
 
-FourCliquesReduction::FourCliquesReduction(std::vector<std::vector<int>>& adj, std::vector<bool>& nodes_status) :
-    _adj(adj), _nodes_status(nodes_status)
+FourCliquesReduction::FourCliquesReduction(std::vector<std::vector<int>>& adj, std::vector<bool>& nodes_status, timer &t, double time_limit) :
+    _adj(adj), _nodes_status(nodes_status), _t(t), _time_limit(time_limit)
 {
     _N = _adj.size();
     _four_cliques = new std::vector<size_t>(_N, 0);
     _used.set_fast_set(_N);
 
-    _triangles = new TriangleReduction(adj, nodes_status, _four_cliques);
+    _triangles = new TriangleReduction(adj, nodes_status, _four_cliques, _t, _time_limit);
 }
 
 FourCliquesReduction::~FourCliquesReduction() {
@@ -161,7 +161,7 @@ bool FourCliquesReduction::reduce(size_t const k, size_t const m) {
     FastSet used_too;
     used_too.set_fast_set(_N);
 
-    while (reduction_helper(min_four_cliques, need_updating)) 
+    while (reduction_helper(min_four_cliques, need_updating) && _t.elapsed() < _time_limit) 
         for (size_t v = 0; v < _N; v++) if (need_updating.get(v)) _four_cliques->at(v) = count_four_cliques_containing_vertex(v, used_too);
         reduced = true;
 
@@ -591,7 +591,7 @@ size_t FourCliquesReduction::edge_reduce_new2(std::unordered_map<std::pair<int, 
         edges_reduced = edge_reduce_helper_new2(edges_status, edge_4clqs, min_4clqs);
         total_edges_reduced += edges_reduced;
         delete_vertices_update_4clqs(edges_status, edge_4clqs, k, q);
-    } while (edges_reduced > 0);
+    } while (edges_reduced > 0 && _t.elapsed() < _time_limit);
 
     return total_edges_reduced;
 }

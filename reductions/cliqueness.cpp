@@ -15,8 +15,8 @@
 #include "../quick-cliques/Algorithm.h"
 #include "../quick-cliques/DegeneracyAlgorithm.h"
 
-CliquenessReduction::CliquenessReduction(std::vector<std::vector<int>> *adj, std::vector<bool> *nodes_status) :
-    _adj(*adj), _nodes_status(*nodes_status)
+CliquenessReduction::CliquenessReduction(std::vector<std::vector<int>> *adj, std::vector<bool> *nodes_status, std::unordered_map<std::pair<int, int>, bool, pair_hash> &edges_status, timer &t, double time_limit) :
+    _adj(*adj), _nodes_status(*nodes_status), _edges_status(edges_status), _time_limit(time_limit), _t(t)
 {
     _N = _adj.size();
     _max_clq.resize(_N, 1);
@@ -82,10 +82,19 @@ bool CliquenessReduction::reduce(double const clique_size, double const kplex) {
 
     integrated_quick_clqs();
 
-    for (size_t i = 0; i < _max_clq.size(); i++) {
-        if (_nodes_status[i] && _max_clq[i] < min_clique_size) {
-            _nodes_status[i] = false;
+    for (size_t v = 0; v < _max_clq.size(); v++) {
+        if (_t.elapsed() > _time_limit) break;
+        if (_nodes_status[v] && _max_clq[v] < min_clique_size) {
+            _nodes_status[v] = false;
             reduced = true;
+
+            for (int u : _adj[v]) {
+                std::pair<int, int> vu_edge;
+                if (v < u) vu_edge = std::make_pair(v, u);
+                else vu_edge = std::make_pair(u, v);
+
+                _edges_status.at(vu_edge) = false;
+            }
         }
     }
     return reduced;

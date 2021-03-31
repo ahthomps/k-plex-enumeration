@@ -4,8 +4,8 @@
 
 #include "coreness.h"
 
-CorenessReduction::CorenessReduction(std::vector<std::vector<int>> *adj, std::vector<bool> *nodes_status) :
-    _adj(*adj), _nodes_status(*nodes_status)
+CorenessReduction::CorenessReduction(std::vector<std::vector<int>> *adj, std::vector<bool> *nodes_status, std::unordered_map<std::pair<int, int>, bool, pair_hash> &edges_status, timer &t, double time_limit) :
+    _adj(*adj), _nodes_status(*nodes_status), _edges_status(edges_status), _time_limit(time_limit), _t(t)
 {
     _N = _adj.size();
     // _outer.resize(_N);
@@ -47,10 +47,17 @@ bool CorenessReduction::bruteforce_reduce(size_t const clique_size, size_t const
             if (_nodes_status[v] && degrees[v] < min_degree) {
                 _nodes_status[v] = false;
                 reduced = true;
+                for (int u : _adj[v]) {
+                    std::pair<int, int> vu_edge;
+                    if (v < u) vu_edge = std::make_pair(v, u);
+                    else vu_edge = std::make_pair(u, v);
+
+                    _edges_status.at(vu_edge) = false;
+                }
             }
         }
 
-    } while (reduced);
+    } while (reduced && _t.elapsed() < _time_limit);
 
     return reduced;
 }
@@ -66,6 +73,15 @@ bool CorenessReduction::reduce(size_t const clique_size, size_t const kplex) {
             _outer[current_degree].erase(_locater[vertex]);
             _degree[vertex] = -1;
             _nodes_status[vertex] = false;
+
+            for (int u : _adj[vertex]) {
+                std::pair<int, int> vu_edge;
+                if (vertex < u) vu_edge = std::make_pair(vertex, u);
+                else vu_edge = std::make_pair(u, vertex);
+
+                _edges_status.at(vu_edge) = false;
+            }
+
             reduced = true;
 
             std::vector<int> const &vertex_neighborhood = _adj[vertex];
@@ -76,6 +92,15 @@ bool CorenessReduction::reduce(size_t const clique_size, size_t const kplex) {
 
                 if (_degree[neighbor] == -1) {
                     _nodes_status[neighbor] = false;
+                    for (int u : _adj[neighbor]) {
+                        std::pair<int, int> vu_edge;
+                        if (neighbor < u) vu_edge = std::make_pair(neighbor, u);
+                        else vu_edge = std::make_pair(u, neighbor);
+
+                        if (_edges_status.at(vu_edge)) {
+                            std::cout << "NEED TO MARK" << std::endl;
+                        }
+                    }
                     continue;
                 }
                 _outer[_degree[neighbor]].push_front(neighbor);

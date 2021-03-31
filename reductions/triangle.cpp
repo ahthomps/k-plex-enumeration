@@ -1,4 +1,4 @@
-#include <iostream>
+ #include <iostream>
 #include <vector>
 #include <list>
 #include <cmath>
@@ -11,8 +11,8 @@
 #include "../tools/timer.h"
 
 
-TriangleReduction::TriangleReduction(std::vector<std::vector<int>>& adj, std::vector<bool>& nodes_status) :
-    _adj(adj), _nodes_status(nodes_status)
+TriangleReduction::TriangleReduction(std::vector<std::vector<int>>& adj, std::vector<bool>& nodes_status, timer &t, double time_limit) :
+    _adj(adj), _nodes_status(nodes_status), _t(t), _time_limit(time_limit)
 {
     _N = _adj.size();
     _triangles = new std::vector<size_t>(_N, 0);
@@ -20,8 +20,8 @@ TriangleReduction::TriangleReduction(std::vector<std::vector<int>>& adj, std::ve
  
 }
 
-TriangleReduction::TriangleReduction(std::vector<std::vector<int>> &adj, std::vector<bool> &nodes_status, std::vector<size_t>* four_cliques) :
-    _adj(adj), _nodes_status(nodes_status)
+TriangleReduction::TriangleReduction(std::vector<std::vector<int>> &adj, std::vector<bool> &nodes_status, std::vector<size_t>* four_cliques, timer &t, double time_limit) :
+    _adj(adj), _nodes_status(nodes_status), _t(t), _time_limit(time_limit)
 {
     _N = _adj.size();
     _triangles = four_cliques;
@@ -38,6 +38,27 @@ size_t TriangleReduction::get_total_num_triangles() {
     size_t count = 0;
     for (size_t u : (*_triangles)) count += u;
     return count;
+}
+
+size_t TriangleReduction::get_triangles_containing_vertex(int const u) {
+    size_t num_triangles = 0;
+    std::vector<int> u_neighborhood = _adj[u];
+    if (u_neighborhood.empty()) return 0;
+    for (size_t i = 0; i < u_neighborhood.size() - 1; i++) {
+        int v = u_neighborhood[i];
+        if (!_nodes_status[v]) continue;
+        _used.clear();
+        for (int w : _adj[v]) _used.add(w);
+        for (size_t j = i + 1; j < u_neighborhood.size(); j++) {
+            int w = u_neighborhood[j];
+            if (_nodes_status[w] && _used.get(w)) num_triangles += 1;
+        }
+    }
+    return num_triangles;
+}
+
+bool TriangleReduction::is_valid_vertex(size_t const v, size_t const k, size_t const m) {
+    return get_triangles_containing_vertex(v) >= ceil(double(m - k) * (m - 2 * k) / 2);
 }
 
 void TriangleReduction::bruteforce_count_triangles() {
@@ -189,7 +210,7 @@ bool TriangleReduction::reduce(size_t const k, size_t const m) {
     need_updating.set_fast_set(_N);
 
     // std::cout << "reducing..." << std::endl;
-    while (reduction_helper(min_triangles, need_updating)) 
+    while (reduction_helper(min_triangles, need_updating) && _t.elapsed() < _time_limit) 
         for (size_t v = 0; v < _N; v++) if (need_updating.get(v)) count_triangles_containing_vertex(v);
         reduced = true;
 
@@ -295,12 +316,13 @@ std::unordered_map<std::pair<int, int>, size_t, pair_hash> TriangleReduction::ed
         for (int u : _adj[v]) {
             if (!_used.get(u)) continue;
 
-            for (int w : _adj[u]) 
-                if (u < w && edges_status.at(std::make_pair(u, w)) && _used.get(w)) {
+            for (int w : _adj[u]) {
+                if (u < w && _used.get(w) && edges_status.at(std::make_pair(u, w))) {
                     edge_triangles.at(std::make_pair(v, u)) += 1;
                     edge_triangles.at(std::make_pair(v, w)) += 1;
                     edge_triangles.at(std::make_pair(u, w)) += 1;
                 }
+            }
         }
     }
 
@@ -539,7 +561,7 @@ size_t TriangleReduction::edge_reduce_new2(std::unordered_map<std::pair<int, int
         edges_reduced = edge_reduce_helper_new2(edges_status, edge_triangles, min_triangles);
         total_edges_reduced += edges_reduced;
         delete_vertices_update_triangles(edges_status, edge_triangles, k, q);
-    } while (edges_reduced > 0);
+    } while (edges_reduced > 0 && _t.elapsed() < _time_limit);
 
     return total_edges_reduced;
 

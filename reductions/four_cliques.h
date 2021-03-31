@@ -5,6 +5,7 @@
 #include <tuple>
 
 #include "../tools/graph_tools.h"
+#include "../tools/definitions.h"
 #include "triangle.h"
 
 #ifndef FOURCLIQUES_H_
@@ -12,12 +13,7 @@
 
 class FourCliquesReduction {
     public:
-        std::vector<std::vector<int>>& _adj;
-        std::vector<bool>& _nodes_status;
-        size_t _N;
-        std::vector<size_t> *_four_cliques;
-
-        FourCliquesReduction(std::vector<std::vector<int>>& adj, std::vector<bool>& nodes_status);
+        FourCliquesReduction(std::vector<std::vector<int>>& adj, std::vector<bool>& nodes_status, timer &t, double time_limit);
         ~FourCliquesReduction();
 
         size_t get_total_num_four_cliques();
@@ -36,6 +32,13 @@ class FourCliquesReduction {
         size_t edge_reduce_new2(std::unordered_map<std::pair<int, int>, bool, pair_hash> &edges_status, double const k, double const q);
 
     private:
+        std::vector<std::vector<int>>& _adj;
+        std::vector<bool>& _nodes_status;
+        size_t _N;
+        timer &_t;
+        double _time_limit;
+        std::vector<size_t> *_four_cliques;
+
         FastSet _used;
         GraphTools _graph_tools;
 

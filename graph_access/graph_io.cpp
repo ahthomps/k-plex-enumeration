@@ -16,6 +16,18 @@ graph_io::~graph_io() {
 
 }
 
+std::vector<std::vector<int>> graph_io::buildAdjG(graph_access &G) {
+    std::vector<std::vector<int>> adj;
+    forall_nodes(G, v) {
+        std::vector<int> neighbors;
+        forall_out_edges(G, e, v) {
+            neighbors.push_back(static_cast<int>(G.getEdgeTarget(e)));
+        } endfor
+        adj.push_back(neighbors);
+    } endfor
+    return adj;
+}
+
 int graph_io::writeGraphWeighted(graph_access & G, const std::string & filename) {
         std::ofstream f(filename.c_str());
         f << G.number_of_nodes() <<  " " <<  G.number_of_edges()/2 <<  " 11" <<  std::endl;
