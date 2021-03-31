@@ -4,8 +4,8 @@ CFLAGS = -std=c++11 -O3
 
 all: main
 
-main: optimized/graph_io.o optimized/bronKerbosch.o optimized/coreness.o optimized/MemoryManager.o optimized/Algorithm.o optimized/Tools.o optimized/DegeneracyTools.o optimized/DegeneracyAlgorithm.o optimized/cliqueness.o optimized/triangle.o optimized/four_cliques.o optimized/EnuBundle.o tools/config.h kplex_enum.h main.cpp
-	g++ optimized/graph_io.o optimized/bronKerbosch.o optimized/coreness.o optimized/MemoryManager.o optimized/Algorithm.o optimized/Tools.o optimized/DegeneracyTools.o optimized/DegeneracyAlgorithm.o optimized/cliqueness.o optimized/triangle.o optimized/four_cliques.o optimized/EnuBundle.o  main.cpp $(CFLAGS) -o main
+main: optimized/graph_io.o optimized/bronKerbosch.o optimized/coreness.o optimized/MemoryManager.o optimized/Algorithm.o optimized/Tools.o optimized/DegeneracyTools.o optimized/DegeneracyAlgorithm.o optimized/cliqueness.o optimized/triangle.o optimized/four_cliques.o optimized/EnuBundle.o tools/config.h optimized/kplex_enum.o main.cpp
+	g++ optimized/graph_io.o optimized/bronKerbosch.o optimized/coreness.o optimized/MemoryManager.o optimized/Algorithm.o optimized/Tools.o optimized/DegeneracyTools.o optimized/DegeneracyAlgorithm.o optimized/cliqueness.o optimized/triangle.o optimized/four_cliques.o optimized/EnuBundle.o optimized/kplex_enum.o main.cpp $(CFLAGS) -o main
 
 optimized/bronKerbosch.o: bronKerbosch/bronKerbosch.cpp bronKerbosch/bronKerbosch.h
 	g++ bronKerbosch/bronKerbosch.cpp -c $(CFLAGS) -o optimized/bronKerbosch.o
@@ -42,5 +42,8 @@ optimized/DegeneracyAlgorithm.o: quick-cliques/DegeneracyAlgorithm.cpp quick-cli
 
 optimized/EnuBundle.o: faplex/EnuBundle.cpp faplex/EnuBundle.h
 	g++ faplex/EnuBundle.cpp $(CFLAGS) -Wall -c -o optimized/EnuBundle.o
+
+optimized/kplex_enum.o: kplex_enum.cpp kplex_enum.h
+	g++ kplex_enum.cpp $(CFLAGS) -Wall -c -o optimized/kplex_enum.o
 
 
