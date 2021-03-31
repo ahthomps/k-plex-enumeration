@@ -46,8 +46,10 @@ void KPlexEnum::run(size_t k, size_t q, double time_limit, size_t expr, bool zho
     std::vector<std::vector<int>> subgraph_adj;
     size_t edge_count = build_subgraph(subgraph_adj);
 
-    if (zhou)
+    if (zhou) {
         run_zhou(subgraph_adj, edge_count);
+        _result += std::to_string(_t.elapsed()) + " ";
+    }
 
     std::cout << _header << _result << std::endl;
 }
