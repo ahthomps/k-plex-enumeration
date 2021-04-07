@@ -587,7 +587,12 @@ size_t FourCliquesReduction::edge_reduce_new2(std::unordered_map<std::pair<int, 
 
     std::unordered_map<std::pair<int, int>, size_t, pair_hash> edge_4clqs = edge_count_4clqs_new(edges_status);
 
+    size_t exhaustive_count = 0;
+
     do {
+        std::cout << "four clique iteration number: " << exhaustive_count << std::endl;
+        exhaustive_count++;
+
         edges_reduced = edge_reduce_helper_new2(edges_status, edge_4clqs, min_4clqs);
         total_edges_reduced += edges_reduced;
         delete_vertices_update_4clqs(edges_status, edge_4clqs, k, q);

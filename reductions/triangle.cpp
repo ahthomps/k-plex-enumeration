@@ -557,7 +557,12 @@ size_t TriangleReduction::edge_reduce_new2(std::unordered_map<std::pair<int, int
 
     std::unordered_map<std::pair<int, int>, size_t, pair_hash> edge_triangles = edge_count_triangles_new(edges_status);
 
+    size_t exhaustive_count = 0;
+
     do {
+        std::cout << "triangle iteration number: " << exhaustive_count << std::endl;
+        exhaustive_count++;
+
         edges_reduced = edge_reduce_helper_new2(edges_status, edge_triangles, min_triangles);
         total_edges_reduced += edges_reduced;
         delete_vertices_update_triangles(edges_status, edge_triangles, k, q);
