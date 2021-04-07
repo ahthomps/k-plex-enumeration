@@ -77,10 +77,12 @@ void CliquenessReduction::get_maximum_cliques_bronkerbosh(std::function<bool(std
 
 
 bool CliquenessReduction::reduce(double const clique_size, double const kplex) {
+    std::cout << "starting cliqueness reduction (" << _t.elapsed() << ") ..." << std::endl;
     size_t min_clique_size = std::ceil(clique_size / kplex);
     bool reduced = false;
 
     integrated_quick_clqs();
+    std::cout << "found quick-cliques (" << _t.elapsed() << ")" << std::endl;
 
     for (size_t v = 0; v < _max_clq.size(); v++) {
         if (_t.elapsed() > _time_limit) break;
@@ -97,6 +99,7 @@ bool CliquenessReduction::reduce(double const clique_size, double const kplex) {
             }
         }
     }
+    std::cout << "...finishing cliquess reduction (" << _t.elapsed() << ")" << std::endl;
     return reduced;
 }
 

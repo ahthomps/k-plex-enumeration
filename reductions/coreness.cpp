@@ -29,6 +29,7 @@ CorenessReduction::CorenessReduction(std::vector<std::vector<int>> *adj, std::ve
 CorenessReduction::~CorenessReduction() {}
 
 bool CorenessReduction::bruteforce_reduce(size_t const clique_size, size_t const kplex) {
+    std::cout << "starting coreness reduction (" << _t.elapsed() << ")..." << std::endl;
     size_t const min_degree = clique_size - kplex;
 
     std::vector<size_t> degrees(_N);
@@ -59,6 +60,7 @@ bool CorenessReduction::bruteforce_reduce(size_t const clique_size, size_t const
 
     } while (reduced && _t.elapsed() < _time_limit);
 
+    std::cout << "...finishing coreness reduction (" << _t.elapsed() << ")" << std::endl;
     return reduced;
 }
 
