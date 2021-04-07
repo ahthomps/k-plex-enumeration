@@ -72,7 +72,11 @@ void KPlexEnum::experiment(size_t expr) {
         run_conte_and_edge_based();
     else if (expr == 1)
         run_conte();
-    else if (expr == 2) {}
+    else if (expr == 2) {
+        run_coreness();
+        run_edge_based_triangles();
+        run_edge_based_four_cliques();
+    }
     else {
         std::cout << "must enter experiment number in range [0,2]." << std::endl;
         exit(1);
@@ -80,10 +84,7 @@ void KPlexEnum::experiment(size_t expr) {
 }
 
 void KPlexEnum::run_conte_and_edge_based() {
-    run_coreness();
     run_cliqueness();
-    run_edge_based_triangles();
-    run_edge_based_four_cliques();
 }
 
 void KPlexEnum::run_conte() {
