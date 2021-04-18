@@ -68,8 +68,9 @@ size_t KPlexEnum::build_subgraph(std::vector<std::vector<int>> &subgraph_adj) {
 }
 
 void KPlexEnum::experiment(size_t expr) {
-    if (expr == 0) 
+    if (expr == 0) {
         run_conte_and_edge_based();
+    }
     else if (expr == 1)
         run_conte();
     else if (expr == 2) {
@@ -84,7 +85,10 @@ void KPlexEnum::experiment(size_t expr) {
 }
 
 void KPlexEnum::run_conte_and_edge_based() {
+    run_coreness();
     run_cliqueness();
+    run_edge_based_triangles();
+    run_edge_based_four_cliques();
 }
 
 void KPlexEnum::run_conte() {
