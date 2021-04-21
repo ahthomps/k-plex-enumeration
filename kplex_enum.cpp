@@ -68,13 +68,45 @@ size_t KPlexEnum::build_subgraph(std::vector<std::vector<int>> &subgraph_adj) {
 }
 
 void KPlexEnum::experiment(size_t expr) {
+    // only conte
     if (expr == 0) {
-        run_conte_and_edge_based();
+        run_coreness();
+        run_cliqueness();
     }
-    else if (expr == 1)
-        run_conte();
+    // conte and vertex-triangle
+    else if (expr == 1) {
+        run_coreness();
+        run_cliqueness();
+        run_vertex_based_triangles();
+    }
+    // conte and vertex-triangle and vertex-4-clqs
     else if (expr == 2) {
         run_coreness();
+        run_cliqueness();
+        run_vertex_based_triangles();
+        run_vertex_based_four_cliques();
+    }
+    // conte and vertex-triangle and vertex-4-clqs and edge-triangle
+    else if (expr == 3) {
+        run_coreness();
+        run_cliqueness();
+        run_vertex_based_triangles();
+        run_vertex_based_four_cliques();
+        run_edge_based_triangles();
+    }
+    // conte and vertex-triangle and vertex-4-clqs and edge-triangle and edge-4-clqs
+    else if (expr == 4) {
+        run_coreness();
+        run_cliqueness();
+        run_vertex_based_triangles();
+        run_vertex_based_four_cliques();
+        run_edge_based_triangles();
+        run_edge_based_four_cliques();
+    }
+    // conte and edge-triangle and edge-4clqs
+    else if (expr == 5) {
+        run_coreness();
+        run_cliqueness();
         run_edge_based_triangles();
         run_edge_based_four_cliques();
     }
