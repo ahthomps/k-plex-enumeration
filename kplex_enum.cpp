@@ -86,29 +86,22 @@ void KPlexEnum::experiment(size_t expr) {
         run_vertex_based_triangles();
         run_vertex_based_four_cliques();
     }
-    // conte and vertex-triangle and vertex-4-clqs and edge-triangle
+    // conte and edge-triangle
     else if (expr == 3) {
         run_coreness();
         run_cliqueness();
-        run_vertex_based_triangles();
-        run_vertex_based_four_cliques();
         run_edge_based_triangles();
     }
-    // conte and vertex-triangle and vertex-4-clqs and edge-triangle and edge-4-clqs
+    // conte and edge-triangle and edge-4clqs
     else if (expr == 4) {
         run_coreness();
         run_cliqueness();
-        run_vertex_based_triangles();
-        run_vertex_based_four_cliques();
         run_edge_based_triangles();
         run_edge_based_four_cliques();
     }
-    // conte and edge-triangle and edge-4clqs
+    // only zhou
     else if (expr == 5) {
-        run_coreness();
-        run_cliqueness();
-        run_edge_based_triangles();
-        run_edge_based_four_cliques();
+
     }
     else {
         std::cout << "must enter experiment number in range [0,2]." << std::endl;
