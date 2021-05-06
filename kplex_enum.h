@@ -19,17 +19,23 @@
 class KPlexEnum {
 public:
 
-	KPlexEnum() {};
+    KPlexEnum() {};
     ~KPlexEnum() {};
 
     void read_graph(std::string filename);
-
-    void run(size_t k, size_t q, double time_limit, size_t expr, bool zhou);
+    void configure(size_t k, size_t q, double time_limit, bool conte, bool v_tri, bool v_4clq, bool e_tri, bool e_4clq, bool zhou);
+    void run();
 
 private:
     size_t _k;
     size_t _q;
     double _time_limit;
+    bool _conte; 
+    bool _v_tri; 
+    bool _v_4clq; 
+    bool _e_tri;
+    bool _e_4clq;
+    bool _zhou;
 
     std::vector<std::vector<int>> _adj;
     size_t _N;
@@ -42,6 +48,8 @@ private:
     timer _t;
 
     size_t build_subgraph(std::vector<std::vector<int>> &subgraph_adj);
+
+    void update_edges_status();
 
     void experiment(size_t expr);
 

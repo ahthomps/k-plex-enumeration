@@ -32,21 +32,47 @@ void KPlexEnum::read_graph(std::string filename) {
     _header += short_filename + " " + std::to_string(G.number_of_nodes()) + " " + std::to_string(G.number_of_edges()) + " ";
 }
 
-void KPlexEnum::run(size_t k, size_t q, double time_limit, size_t expr, bool zhou) {
-    _result = "";
+void KPlexEnum::update_edges_status() {
+    for (int v = 0; v < (int) _adj.size(); v++) {
+        if (_nodes_status[v]) continue;
+        for (int u : _adj[v]) {
+            std::pair<int, int> edge;
+            if (v < u) edge = std::make_pair(v, u);
+            else edge = std::make_pair(u, v);
+            _edges_status.at(edge) = false;
+        }
+    }
+}
+
+void KPlexEnum::configure(size_t k, size_t q, double time_limit, bool conte, bool v_tri, bool v_4clq, bool e_tri, bool e_4clq, bool zhou) {
     _k = k;
     _q = q;
     _time_limit = time_limit;
+    _conte = conte;
+    _v_tri = v_tri;
+    _v_4clq = v_4clq;
+    _e_tri = e_tri;
+    _e_4clq = e_4clq;
+    _zhou = zhou;
+}
+
+void KPlexEnum::run() {
+    _result = "";
     _header += std::to_string(_k) + " " + std::to_string(_q) + " ";
 
     _t.restart();
 
-    experiment(expr);
+    if (_conte) run_conte();
+    if (_v_tri) run_vertex_based_triangles();
+    if (_v_4clq) run_vertex_based_four_cliques();
+    if (_v_tri || _v_4clq) update_edges_status();
+    if (_e_tri) run_edge_based_triangles();
+    if (_e_4clq) run_edge_based_four_cliques();
 
     std::vector<std::vector<int>> subgraph_adj;
     size_t edge_count = build_subgraph(subgraph_adj);
 
-    if (zhou) {
+    if (_zhou) {
         run_zhou(subgraph_adj, edge_count);
         _result += std::to_string(_t.elapsed()) + " ";
     }
